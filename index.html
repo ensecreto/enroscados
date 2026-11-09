@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Enroscados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* Plató de TV: azul noche, rosco de letras alrededor de la cámara, panel de pregunta debajo */
+:root{
+  --night:#081634; --panel:#102654; --panel2:#17336d; --line:#2a4a8f;
+  --blue:#1f62e0; --green:#16a85a; --red:#dd3b35; --gold:#ffc72e; --grey:#3b4a6b;
+  --ink:#eef3ff; --muted:#a3b3d9;
+  --glow:#11307a; --cam1:#173a86; --cam2:#0b1f4d; --okText:#8ff0b8; --koText:#ffaba7; --goldText:#ffc72e; --listen:#0e3d26;
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+/* Skins: cambian el fondo y el color de las letras del rosco. Verde y rojo se reservan para acierto y fallo. */
+:root[data-skin="morado"]{--night:#140a2b;--panel:#221345;--panel2:#2f1c5c;--line:#4b3388;--blue:#7b3fe4;--glow:#3b1a7a;--cam1:#4a2496;--cam2:#1d0f3d;--muted:#b9a8de}
+:root[data-skin="atardecer"]{--night:#24100a;--panel:#3a1a10;--panel2:#4f2516;--line:#7a3d24;--blue:#e2661b;--glow:#6b2a10;--cam1:#7a3417;--cam2:#2f130a;--muted:#dcb39c}
+:root[data-skin="fucsia"]{--night:#250a1d;--panel:#3a102e;--panel2:#50173f;--line:#7d2662;--blue:#d6359c;--glow:#5f1549;--cam1:#7a1d5c;--cam2:#2e0b23;--muted:#e0a9cc}
+:root[data-skin="oceano"]{--night:#05202a;--panel:#0b3240;--panel2:#114254;--line:#1f6178;--blue:#0f8fb8;--glow:#0d4c63;--cam1:#13627e;--cam2:#062633;--muted:#9fc9d8}
+:root[data-skin="grafito"]{--night:#111318;--panel:#1b1e25;--panel2:#262a33;--line:#3b414d;--blue:#5468ff;--glow:#2a2f3a;--cam1:#30353f;--cam2:#15181d;--muted:#a9b0bf}
+:root[data-skin="imparables"]{--night:#ffffff;--panel:#ffffff;--panel2:#eaf8fd;--line:#c6e8f4;--blue:#17b4ea;--green:#61ce70;--ink:#10324a;--muted:#5a7487;--glow:#eaf8fd;--cam1:#17b4ea;--cam2:#0b6f93;--okText:#2c8a3a;--koText:#b42318;--goldText:#8a5a00;--listen:#e3f7e6;--grey:#b8c7d2;color-scheme:light}
+:root[data-skin="claro"]{--night:#eef2fb;--panel:#ffffff;--panel2:#e4eaf7;--line:#c3cde4;--blue:#1f62e0;--ink:#13204a;--muted:#55618a;--glow:#dce5fa;--cam1:#2a5bc4;--cam2:#173a86;--okText:#0e7a3e;--koText:#b42318;--goldText:#8a5a00;--listen:#d6f5e3;--grey:#9aa6c2;color-scheme:light}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(120% 80% at 50% 0%, var(--glow) 0%, var(--night) 60%) fixed, var(--night);color:var(--ink);font:16px/1.5 var(--body);min-height:100vh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance}
+.wrap{max-width:980px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:.01em}
+.brand i{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--blue) 0 60%,var(--green) 0 80%,var(--red) 0 92%,var(--gold) 0);display:inline-block}
+nav{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);padding:4px;border-radius:999px;border:1px solid var(--line)}
+nav button{border:0;background:transparent;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:700}
+nav button[aria-current="true"]{background:var(--blue);color:#fff}
+nav button:disabled{opacity:.4;cursor:not-allowed}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-weight:700;margin-bottom:6px;font-size:.92rem}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+input[type=text],input[type=search],input[type=email],input[type=number],input[type=password],select,textarea{width:100%;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg label{margin:0;padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--muted)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+span{color:#fff}
+.seg label:has(input:checked){background:var(--panel2);color:#fff}
+.check{display:flex;gap:10px;align-items:center;font-weight:700;margin:0 0 10px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--blue)}
+.btn{border:0;border-radius:12px;padding:11px 18px;font-weight:700;cursor:pointer;background:var(--panel2);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.12)}
+.btn:focus-visible,nav button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.big{font-size:1.15rem;padding:14px 26px;font-family:var(--display)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1300}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.small{padding:6px 10px;font-size:.85rem;border-radius:8px}
+.note{color:var(--muted);font-size:.9rem}
+.warn{background:#3a2a07;border:1px solid #7a5a12;color:#ffe6a6;border-radius:12px;padding:10px 12px;font-size:.9rem;margin-bottom:12px}
+.ok{color:var(--okText)}
+.prev{width:180px;max-width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--night);border:3px solid var(--line);display:grid;place-items:center;margin:0 auto 12px}
+.prev video,.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+[hidden]{display:none!important}
+
+/* JUEGO */
+.hud{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:center}
+.pill.okc{color:var(--okText)}.pill.koc{color:var(--koText)}
+.pill.time{font-family:var(--display);font-size:1.15rem;color:var(--goldText)}
+.pill.status.listen{background:var(--listen);border-color:var(--green)}
+.pill.status.listen::before{content:"";width:9px;height:9px;border-radius:50%;background:#41e28a;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.stage{position:relative;width:min(100%,560px);aspect-ratio:1;margin:0 auto}
+.cam{position:absolute;inset:17%;border-radius:50%;overflow:hidden;background:radial-gradient(circle,var(--cam1),var(--cam2));border:4px solid var(--line);display:grid;place-items:center}
+.cam video{position:absolute;inset:0}
+.bigLetter{font-family:var(--display);font-weight:800;font-size:clamp(4rem,18vw,9rem);color:var(--gold);text-shadow:0 4px 0 #0006;position:relative}
+.cam.hasvideo .bigLetter{position:absolute;bottom:6%;font-size:clamp(2rem,8vw,3.6rem)}
+.rec{position:absolute;top:4%;right:4%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem;padding:4px 10px;border-radius:999px;display:flex;gap:6px;align-items:center}
+.rec::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+.L{position:absolute;width:8.6%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(.8rem,2.8vw,1.35rem);background:var(--blue);color:#fff;border:2px solid #ffffff55;box-shadow:0 3px 0 #0005;transition:background .25s,transform .25s}
+.L.acierto{background:var(--green)}
+.L.fallo{background:var(--red)}
+.L.vacio{background:var(--grey);color:#ffffff66}
+.L.cur{transform:translate(-50%,-50%) scale(1.28);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 3px 0 #0005;z-index:2}
+.qcard{max-width:720px;margin:16px auto 0;text-align:center}
+.qlabel{font-family:var(--display);color:var(--goldText);font-size:1.1rem;letter-spacing:.04em;text-transform:uppercase}
+.qtext{font-size:clamp(1.15rem,3.4vw,1.55rem);font-weight:700;margin:6px 0 10px}
+.heard{color:var(--muted);min-height:1.5em;font-style:italic}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.typed{display:flex;gap:8px;max-width:520px;margin:12px auto 0}
+.typed input{flex:1;min-width:0}
+.ref{margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ref span{align-self:center;color:var(--muted);font-size:.85rem}
+
+/* RESULTADOS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--night);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:2rem;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.85rem}
+.resvideo video{width:100%;max-width:420px;border-radius:14px;display:block;margin:0 auto 10px;background:#000}
+.fails{margin:0;padding-left:20px}
+.fails li{margin-bottom:4px}
+
+/* TABLAS */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--panel2);font-weight:700;white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums;text-align:right}
+tr:last-child td{border-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 14px}
+.chip{min-width:34px;text-align:center;padding:4px 6px;border-radius:8px;background:var(--panel2);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.chip small{display:block;font-weight:400;color:var(--muted);font-size:.7rem}
+.chip.zero{background:#4a1714;color:#ffb3ae}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.toolbar .field{margin:0;min-width:160px;flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;max-width:min(92vw,520px);z-index:50;font-weight:700;text-align:center}
+.catbox{display:flex;flex-direction:column;gap:10px;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tagbar{display:flex;flex-wrap:wrap;gap:6px}
+.tagbtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700;cursor:pointer}
+.tagbtn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a1300}
+.catlist{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.cat{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin:0;padding:8px;border-radius:8px;cursor:pointer;font-weight:400}
+.cat:hover{background:var(--panel)}
+.cat input{width:20px;height:20px;accent-color:var(--blue);flex:none;margin-top:2px}
+.catname{font-weight:700;flex:1;min-width:0}
+.catname small{color:var(--muted);font-weight:400}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tagchip{background:var(--panel2);color:var(--muted);border-radius:999px;padding:1px 8px;font-size:.75rem}
+.group{border-top:1px solid var(--line);padding-top:6px;margin-top:4px}
+.group:first-child{border-top:0;margin-top:0;padding-top:0}
+.grouphead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 8px;color:var(--goldText)}
+.sharebox{margin-top:14px;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px}
+.sharedBanner{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;background:var(--night);border:2px solid var(--gold);border-radius:12px;padding:12px;margin-bottom:14px}
+.sharedBanner b{flex:1;min-width:0;font-family:var(--display);font-size:1.15rem}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hidechk{width:20px;height:20px;accent-color:var(--blue)}
+.navcta{color:var(--goldText)!important}
+nav button.navcta[aria-current="true"]{background:var(--gold);color:#1a1300!important}
+.ctaCard{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:20px;border-color:var(--gold)}
+.ctaCard>div{flex:1;min-width:220px}
+.wlHero{margin-bottom:20px}
+.wlTitle{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;margin:4px 0 8px}
+.wlLead{font-size:1.1rem;max-width:62ch;margin:0 0 10px}
+.wlList{margin:0;padding-left:20px;display:grid;gap:4px}
+.wlH3{margin:0 0 12px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+@media (max-width:820px){.plans{grid-template-columns:1fr}}
+.plan h3{margin-bottom:6px}
+.plan.featured{border:2px solid var(--gold)}
+.price{font-family:var(--display);font-weight:800;font-size:1.8rem;margin:0;font-variant-numeric:tabular-nums}
+.price small{font-size:.95rem;color:var(--muted);font-weight:600}
+.price.alt{font-size:1.25rem}
+.badge{display:inline-block;background:var(--green);color:#fff;font-family:var(--body);font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;vertical-align:middle}
+.tiers{margin:8px 0}
+.tiers td{padding:5px 0;border-bottom:1px solid var(--line)}
+.tiers td.n{font-weight:700;text-align:right}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.privacy{background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:4px 0 12px;font-size:.88rem}
+.privacy summary{cursor:pointer;font-weight:700}
+.privacy p{margin:8px 0 0;color:var(--muted)}
+.consent{font-weight:400;align-items:flex-start}
+.consent input{flex:none;margin-top:3px}
+.skins{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.skin{display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--night);border:2px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;text-align:left}
+.skin[aria-checked="true"]{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.skin b{font-size:.92rem}
+.sw{display:flex;gap:4px;align-items:center;width:100%;border-radius:8px;padding:8px}
+.sw i{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-style:normal;font-family:var(--display);font-weight:800;font-size:.7rem;color:#fff;border:1px solid #ffffff55}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><i></i>Enroscados</div>
+  <nav id="nav">
+    <button data-view="setup" aria-current="true">Jugar</button>
+    <button data-view="scores">Puntuaciones</button>
+    <button data-view="admin">Administrar</button>
+    <button data-view="waitlist" class="navcta">Crea tus roscos</button>
+  </nav>
+</header>
+
+<!-- CONFIGURAR PARTIDA -->
+<section id="v-setup">
+  <div class="grid2">
+    <div class="card">
+      <h2 style="margin-bottom:14px">Nueva partida</h2>
+      <div id="envWarn"></div>
+      <div class="field"><label for="pName">Jugador</label><input type="text" id="pName" placeholder="Tu nombre" maxlength="40"></div>
+      <div class="sharedBanner" id="sharedBox" hidden>
+        <span class="qlabel" style="font-size:.85rem">Rosco compartido</span>
+        <b id="sharedName"></b>
+        <button class="btn small" type="button" id="sharedExit">Elegir otras categorías</button>
+      </div>
+      <div class="field" id="catField"><label for="catSearch">Categorías</label>
+        <div class="catbox">
+          <input type="search" id="catSearch" placeholder="Buscar por nombre o etiqueta" autocomplete="off">
+          <div class="tagbar" id="tagBar" aria-label="Filtrar por etiqueta"></div>
+          <div class="row" style="justify-content:space-between">
+            <label class="check" style="margin:0"><input type="checkbox" id="catAll"> Todas</label>
+            <label class="check" style="margin:0"><input type="checkbox" id="catGroup"> Agrupar por etiqueta</label>
+          </div>
+          <div class="catlist" id="catList"></div>
+          <p class="note" id="catSum" style="margin:0"></p>
+        </div>
+      </div>
+      <div class="field"><label>Modo</label>
+        <div class="row">
+          <div class="seg">
+            <label><input type="radio" name="pModo" value="libre" id="pModoLibre" checked><span>Sin tiempo</span></label>
+            <label><input type="radio" name="pModo" value="tiempo" id="pModoTiempo"><span>Con tiempo</span></label>
+          </div>
+          <div class="row" id="segBox" hidden><input type="number" id="pSegs" min="30" max="900" step="10" value="180" style="width:100px"> <span class="note">segundos</span></div>
+        </div>
+        <span class="note">El reloj solo corre mientras te toca responder, no mientras la voz lee.</span>
+      </div>
+      <label class="check"><input type="checkbox" id="pCam" checked> Verme en cámara</label>
+      <label class="check"><input type="checkbox" id="pRec"> Grabar la partida para descargarla</label>
+      <p class="note" style="margin-top:-4px">Para que la voz en off se oiga en el vídeo: altavoces a buen volumen y sin auriculares.</p>
+      <div class="row" style="margin-top:16px">
+        <button class="btn big primary" id="btnStart">Empezar rosco</button>
+      </div>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3 style="margin-bottom:12px">Cámara y micrófono</h3>
+      <div class="prev"><video id="prevVideo" autoplay muted playsinline></video></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="btnPerm">Activar cámara y micrófono</button><button class="btn" id="btnMicTest">Probar reconocimiento de voz</button></div>
+      <p class="note" id="micTest" aria-live="polite" style="min-height:1.5em;font-weight:700"></p>
+      <p class="note" id="permStatus">El navegador te pedirá permiso. Nada sale de este dispositivo: el vídeo se queda en tu equipo hasta que tú lo descargues.</p>
+      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+      <h3 style="margin-bottom:8px">Cómo se juega</h3>
+      <p class="note" style="text-align:left;margin:0">La voz lee cada letra y su pregunta. Di la respuesta en voz alta. Di <b>"pasapalabra"</b> para saltar; volverá al final de la vuelta. Si el micro no te entiende, puedes escribir o usar los botones de árbitro.</p>
+    </div>
+  </div>
+  <div class="card ctaCard">
+    <div><h3>¿Quieres crear tus propios roscos?</h3><p class="note" style="margin:4px 0 0">Para tus clases, tu comunidad o tu marca. Apúntate a la lista de espera y conoce los precios de lanzamiento.</p></div>
+    <button class="btn gold" type="button" data-go="waitlist">Unirme a la lista de espera</button>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="v-game" hidden>
+  <div class="hud">
+    <span class="pill" id="gWho"></span>
+    <span class="pill okc">✓ <span id="gOk">0</span></span>
+    <span class="pill koc">✗ <span id="gKo">0</span></span>
+    <span class="pill time" id="gTime">00:00</span>
+    <span class="pill status" id="gStatus">Preparado</span>
+  </div>
+  <div class="stage" id="stage">
+    <div class="cam" id="cam"><video id="camVideo" autoplay muted playsinline></video><div class="bigLetter" id="bigLetter">A</div></div>
+    <div class="rec" id="recBadge" hidden>REC</div>
+  </div>
+  <div class="qcard card">
+    <div class="qlabel" id="qLabel"></div>
+    <div class="qtext" id="qText"></div>
+    <div class="heard" id="heard"></div>
+    <div class="controls">
+      <button class="btn gold" id="btnPass">Pasapalabra</button>
+      <button class="btn" id="btnRepeat">Repetir pregunta</button>
+      <button class="btn" id="btnUndo" hidden>Era correcta: corregir</button>
+      <button class="btn red" id="btnStop">Plantarse</button>
+    </div>
+    <form class="typed" id="typedForm" autocomplete="off">
+      <input type="text" id="typed" placeholder="O escribe tu respuesta">
+      <button class="btn primary" type="submit">Responder</button>
+    </form>
+    <div class="ref"><span>Modo árbitro:</span><button class="btn small green" id="btnOk">Marcar acierto</button><button class="btn small red" id="btnKo">Marcar fallo</button></div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section id="v-result" hidden>
+  <div class="card">
+    <h2 id="rTitle">Fin del rosco</h2>
+    <p class="note" id="rSub"></p>
+    <div class="stats">
+      <div class="stat"><b id="rOk">0</b><span>Aciertos</span></div>
+      <div class="stat"><b id="rKo">0</b><span>Fallos</span></div>
+      <div class="stat"><b id="rPend">0</b><span>Sin responder</span></div>
+      <div class="stat"><b id="rTime">0:00</b><span>Tiempo</span></div>
+    </div>
+    <div class="resvideo" id="rVideoBox" hidden>
+      <h3 style="margin-bottom:10px">Tu vídeo</h3>
+      <p class="note" id="rVideoMsg">Preparando el vídeo…</p>
+      <video id="rVideo" controls playsinline hidden></video>
+      <div class="row" style="justify-content:center"><a class="btn green" id="rDownload" hidden>Descargar vídeo</a></div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn primary big" id="btnAgain">Jugar otra vez</button>
+      <button class="btn" data-go="scores">Ver puntuaciones</button>
+    </div>
+  </div>
+</section>
+
+<!-- LISTA DE ESPERA -->
+<section id="v-waitlist" hidden>
+  <div class="card wlHero">
+    <span class="qlabel" style="font-size:.85rem">Próximamente</span>
+    <h2 class="wlTitle">Crea tus propios roscos</h2>
+    <p class="wlLead">Escribe tus preguntas, compártelas con un enlace y deja que tus alumnos o tu comunidad jueguen con voz, cámara y marcador.</p>
+    <ul class="wlList">
+      <li>Roscos ilimitados con tus propias preguntas</li>
+      <li>Un enlace para cada rosco y una página propia con todos los tuyos</li>
+      <li>Puedes pedir que un rosco sea público para que lo juegue todo el mundo</li>
+      <li>Voz en off, reconocimiento de voz y grabación de la partida</li>
+    </ul>
+  </div>
+
+  <h3 class="wlH3">Precios de lanzamiento <span class="note">(IVA incluido)</span></h3>
+  <div class="plans">
+    <div class="card plan">
+      <h3>Creador</h3>
+      <p class="price">5 €<small>/mes</small></p>
+      <p class="price alt">o 40 €<small>/año</small> <span class="badge">ahorras 20 €</span></p>
+      <p class="note">7 días de prueba gratis. Se pide la tarjeta al empezar la prueba; si cancelas antes de que acabe, no se cobra nada.</p>
+    </div>
+    <div class="card plan featured">
+      <h3>Fundador</h3>
+      <p class="price">Pago único</p>
+      <table class="tiers"><tbody>
+        <tr><td>Plazas 1 a 20</td><td class="n">197 €</td></tr>
+        <tr><td>Plazas 21 a 40</td><td class="n">247 €</td></tr>
+        <tr><td>Plazas 41 a 60</td><td class="n">299 €</td></tr>
+      </tbody></table>
+      <p class="note">Solo 60 plazas en total. Acceso al plan Creador mientras la app esté en servicio, sin cuotas. Se cobra el día del lanzamiento, por orden de compra. Apuntarte a la lista no te obliga a pagar.</p>
+    </div>
+    <div class="card plan">
+      <h3>Centros educativos</h3>
+      <p class="price">desde 120 €<small>/año</small></p>
+      <table class="tiers"><tbody>
+        <tr><td>Hasta 10 docentes</td><td class="n">120 €</td></tr>
+        <tr><td>Hasta 20 docentes</td><td class="n">200 €</td></tr>
+        <tr><td>Hasta 35 docentes</td><td class="n">300 €</td></tr>
+        <tr><td>Hasta 50 docentes</td><td class="n">400 €</td></tr>
+      </tbody></table>
+      <p class="note">Cuentas separadas para cada docente y factura a nombre del centro.</p>
+    </div>
+  </div>
+
+  <div class="card wlFormCard" id="wlBox">
+    <h3 style="margin-bottom:6px">Únete a la lista de espera</h3>
+    <p class="note" style="margin-top:0">Te avisaremos por email cuando abramos, antes que a nadie.</p>
+    <p class="warn" id="wlClosed" hidden>La lista de espera abrirá muy pronto.</p>
+    <form id="wlForm" autocomplete="on" novalidate>
+      <div class="grid2" style="gap:12px">
+        <div class="field"><label for="wlNombre">Nombre</label><input type="text" id="wlNombre" name="given-name" autocomplete="given-name" required maxlength="80"></div>
+        <div class="field"><label for="wlApellidos">Apellidos</label><input type="text" id="wlApellidos" name="family-name" autocomplete="family-name" required maxlength="120"></div>
+      </div>
+      <div class="field"><label for="wlEmail">Email</label><input type="email" id="wlEmail" name="email" autocomplete="email" required maxlength="160"></div>
+      <div class="grid2" style="gap:12px">
+        <div class="field"><label for="wlProf">Profesión</label>
+          <select id="wlProf" required>
+            <option value="">Elige una opción</option>
+            <option>Docente de Infantil o Primaria</option>
+            <option>Docente de Secundaria, Bachillerato o FP</option>
+            <option>Docente universitario</option>
+            <option>Equipo directivo de un centro educativo</option>
+            <option>Formador/a, coach o monitor/a</option>
+            <option>Empresa o comunidad online</option>
+            <option>Familia</option>
+            <option>Otra</option>
+          </select></div>
+        <div class="field"><label for="wlPlan">¿Qué plan te interesa?</label>
+          <select id="wlPlan" required>
+            <option value="">Elige una opción</option>
+            <option>Creador mensual (5 €/mes)</option>
+            <option>Creador anual (40 €/año)</option>
+            <option>Fundador (pago único)</option>
+            <option>Centro educativo</option>
+            <option>Aún no lo sé</option>
+          </select></div>
+      </div>
+      <div class="field"><label for="wlUso">¿Para qué usarías la app?</label><textarea id="wlUso" required maxlength="1000" placeholder="Por ejemplo: repasar el temario de Ciencias con mi clase de 5.º, retos para mi comunidad…"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="wlWeb">No rellenes este campo</label><input type="text" id="wlWeb" tabindex="-1" autocomplete="off"></div>
+      <details class="privacy" open>
+        <summary>Información sobre protección de datos</summary>
+        <p><b>Responsable:</b> María Dolores González Gallardo.<br>
+        <b>Finalidad:</b> gestionar tu inscripción en la lista de espera de Enroscados y avisarte por email del lanzamiento y sus condiciones.<br>
+        <b>Legitimación:</b> tu consentimiento, que puedes retirar en cualquier momento.<br>
+        <b>Destinatarios:</b> no se ceden datos a terceros. Se guardan en Google Sheets; Google actúa como encargado del tratamiento.<br>
+        <b>Conservación:</b> hasta el lanzamiento y como máximo 12 meses, o hasta que pidas la baja.<br>
+        <b>Derechos:</b> acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <span id="wlContacto"></span>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+      </details>
+      <label class="check consent"><input type="checkbox" id="wlConsent" required> <span id="wlConsentText">He leído la información sobre protección de datos y acepto que se traten mis datos para gestionar la lista de espera y recibir el aviso de lanzamiento.</span></label>
+      <p class="warn" id="wlErr" hidden></p>
+      <button class="btn big primary" type="submit" id="wlSend">Unirme a la lista de espera</button>
+    </form>
+    <div id="wlDone" hidden>
+      <h3 style="color:var(--okText)">¡Ya estás en la lista!</h3>
+      <p class="note" id="wlDoneMsg">Te escribiremos al email que nos has dado cuando abramos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PUNTUACIONES -->
+<section id="v-scores" hidden>
+  <div class="card">
+    <div class="section-title"><h2>Puntuaciones</h2></div>
+    <div class="toolbar">
+      <div class="field"><label for="sTema">Temática</label><select id="sTema"></select></div>
+      <div class="field"><label for="sJug">Jugador</label><input type="text" id="sJug" placeholder="Filtrar por nombre"></div>
+    </div>
+    <div class="stats" id="sSum"></div>
+    <div class="tablebox"><table><thead><tr><th>Fecha</th><th>Jugador</th><th>Temática</th><th>✓</th><th>✗</th><th>Pend.</th><th>Tiempo</th><th>Modo</th></tr></thead><tbody id="sBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="v-admin" hidden>
+  <div class="card" id="aLogin" style="max-width:420px;margin:0 auto">
+    <h2 style="margin-bottom:12px">Zona de administración</h2>
+    <form id="aLoginForm" autocomplete="off">
+      <div class="field"><label for="aPin">PIN</label><input type="password" id="aPin" inputmode="numeric" placeholder="PIN inicial: 1234"></div>
+      <button class="btn primary" type="submit">Entrar</button>
+      <p class="note" id="aLoginMsg"></p>
+    </form>
+  </div>
+  <div id="aPanel" hidden>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Preguntas</h2><div class="row"><button class="btn primary" id="aNew">Nueva pregunta</button><button class="btn small" id="aLogout">Salir</button></div></div>
+      <div class="toolbar">
+        <div class="field"><label for="aFiltro">Temática</label><select id="aFiltro"></select></div>
+        <div class="field"><label for="aBuscar">Buscar</label><input type="text" id="aBuscar" placeholder="Pregunta o respuesta"></div>
+      </div>
+      <label>Cobertura de letras <span class="note">(preguntas por letra; en rojo, letras que no saldrán)</span></label>
+      <div class="chips" id="aCob"></div>
+
+      <form class="card" id="aForm" hidden style="background:var(--night);margin-bottom:14px" autocomplete="off">
+        <h3 id="aFormTitle" style="margin-bottom:12px">Nueva pregunta</h3>
+        <div class="grid2" style="gap:12px">
+          <div class="field"><label for="fTema">Temática</label><input type="text" id="fTema" list="temasList" required></div>
+          <div class="row" style="align-items:end">
+            <div class="field" style="flex:1"><label for="fLetra">Letra</label><select id="fLetra"></select></div>
+            <div class="field" style="flex:2"><label for="fTipo">Tipo</label><select id="fTipo"><option value="empieza">Empieza por</option><option value="contiene">Contiene la</option></select></div>
+          </div>
+        </div>
+        <div class="field"><label for="fPreg">Pregunta (definición)</label><textarea id="fPreg" required></textarea></div>
+        <div class="field"><label for="fResp">Respuestas válidas</label><input type="text" id="fResp" required placeholder="corazón | corazon"><span class="note">Separa con | las variantes que aceptes (con y sin tilde, singular y plural…).</span></div>
+        <p class="warn" id="fWarn" hidden></p>
+        <div class="row"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" id="aCancel">Cancelar</button></div>
+      </form>
+      <datalist id="temasList"></datalist>
+
+      <div class="tablebox"><table><thead><tr><th>Letra</th><th>Temática</th><th>Pregunta</th><th>Respuestas</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div>
+      <p class="note" id="aCount"></p>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Categorías y etiquetas</h2></div>
+      <p class="note" style="margin-top:0">Escribe las etiquetas separadas por comas. Sirven para filtrar y agrupar categorías al preparar una partida. Se guardan al salir del campo. Marca <b>Oculta</b> para que una categoría no aparezca en la pantalla principal: solo se podrá jugar con su enlace.</p>
+      <div class="field" style="max-width:360px"><label for="aCatSearch">Buscar categoría</label><input type="search" id="aCatSearch" placeholder="Nombre o etiqueta" autocomplete="off"></div>
+      <div class="tablebox"><table><thead><tr><th>Categoría</th><th>Preguntas</th><th>Etiquetas</th><th>Oculta</th><th>Enlace</th></tr></thead><tbody id="aCatBody"></tbody></table></div>
+      <div class="sharebox" id="shareBox" hidden>
+        <label for="shareUrl" id="shareLabel">Enlace directo</label>
+        <div class="row"><input type="text" id="shareUrl" readonly style="flex:1;min-width:0"><button class="btn primary" type="button" id="shareCopy">Copiar</button></div>
+        <p class="note" id="shareNote" style="margin:6px 0 0"></p>
+      </div>
+      <datalist id="tagsList"></datalist>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Apariencia</h2></div>
+      <p class="note" style="margin-top:0">Elige los colores del fondo y de las letras del rosco. Verde y rojo se mantienen siempre para aciertos y fallos.</p>
+      <div class="skins" id="skinList" role="radiogroup" aria-label="Skin de la app"></div>
+      <p class="note" id="skinNote" style="margin-bottom:0"></p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:10px">Importar y exportar</h3>
+        <p class="note">CSV con columnas separadas por punto y coma: <code>tema;letra;tipo;pregunta;respuestas</code> (tipo: empieza o contiene). Se puede preparar en Excel.</p>
+        <div class="field"><label for="aImpMode">Al importar</label><select id="aImpMode"><option value="add">Añadir a las existentes</option><option value="replace">Reemplazar todas</option></select></div>
+        <div class="row">
+          <label class="btn" for="aFile" style="margin:0">Importar JSON o CSV</label><input type="file" id="aFile" accept=".json,.csv,.txt" hidden>
+          <button class="btn" id="aExpJson">Exportar JSON</button>
+          <button class="btn" id="aExpCsv">Exportar CSV</button>
+        </div>
+        <p class="note" style="margin-top:12px">Las preguntas se guardan en este navegador. Para pasarlas a otro equipo, exporta aquí e importa allí.</p>
+        <button class="btn small" id="aSeed">Restaurar preguntas de ejemplo</button>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:10px">Borrar historial de partidas</h3>
+        <div class="field"><label for="hMode">Qué borrar</label>
+          <select id="hMode"><option value="zero">Solo las partidas con 0 aciertos</option><option value="cat">Las partidas de una categoría</option><option value="all">Todo el historial</option></select></div>
+        <div class="field" id="hCatBox" hidden><label for="hCat">Categoría</label><select id="hCat"></select></div>
+        <p class="note" id="hCount"></p>
+        <button class="btn red" type="button" id="hDelete">Borrar</button>
+        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+        <h3 style="margin-bottom:10px">Cambiar PIN</h3>
+        <form id="aPinForm" autocomplete="off">
+          <div class="field"><label for="aNewPin">Nuevo PIN</label><input type="password" id="aNewPin" minlength="4" required></div>
+          <button class="btn" type="submit">Guardar PIN</button>
+        </form>
+        <p class="note">El PIN evita que los jugadores entren por despiste. No es una protección fuerte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const LETRAS = [..."ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"];
+const NOMBRE_LETRA = {A:"a",B:"be",C:"ce",D:"de",E:"e",F:"efe",G:"ge",H:"hache",I:"i",J:"jota",K:"ka",L:"ele",M:"eme",N:"ene","Ñ":"eñe",O:"o",P:"pe",Q:"cu",R:"erre",S:"ese",T:"te",U:"u",V:"uve",W:"uve doble",X:"equis",Y:"i griega",Z:"zeta"};
+const KEY = {q:"rosco.preguntas.v1", s:"rosco.puntuaciones.v1", a:"rosco.admin.v1"};
+const KEY_CAT = "rosco.categorias.v1";
+const SEED_TAGS = {"Deporte":["Educación Física","Primaria"],"Cuerpo humano":["Ciencias","Salud","Primaria"],"Respiración":["Salud","Oxygen Advantage"]};
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast("No se ha podido guardar en este navegador")}}
+function uid(){return Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+let toastT=0;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3500)}
+
+/* ---------- Preguntas de ejemplo ---------- */
+const SEED = [
+ ["Deporte","A","e","Conjunto de disciplinas deportivas que incluye carreras, saltos y lanzamientos.","atletismo"],
+ ["Deporte","B","e","Deporte de equipo en el que hay que meter el balón en una canasta.","baloncesto|basket|básquet|basquet"],
+ ["Deporte","C","e","Deporte que se practica sobre una bicicleta.","ciclismo"],
+ ["Deporte","D","e","Prueba de atletismo formada por diez pruebas distintas.","decatlón|decatlon"],
+ ["Deporte","E","e","Deporte de combate en el que se usa una espada, un florete o un sable.","esgrima"],
+ ["Deporte","F","e","Deporte de equipo en el que se juega con los pies y gana quien mete más goles.","fútbol|futbol"],
+ ["Deporte","G","e","Deporte que se practica con aparatos como la barra, las anillas o el potro.","gimnasia"],
+ ["Deporte","H","e","Deporte que se juega con un stick y una bola, sobre hierba, hielo o patines.","hockey|jockey"],
+ ["Deporte","I","c","Objeto que se pasan los corredores en una carrera de relevos.","testigo"],
+ ["Deporte","J","e","Arte marcial japonesa cuyo nombre significa 'camino suave'.","judo|yudo"],
+ ["Deporte","K","e","Arte marcial japonesa de golpes, con cinturones de colores y katas.","kárate|karate"],
+ ["Deporte","L","e","Prueba de atletismo en la que se arroja un disco, un martillo, un peso o una jabalina.","lanzamiento|lanzamientos"],
+ ["Deporte","M","e","Carrera de 42,195 kilómetros.","maratón|maraton"],
+ ["Deporte","N","e","Deporte que se practica en el agua con estilos como el crol o la braza.","natación|natacion"],
+ ["Deporte","Ñ","c","Actividad deportiva que consiste en subir montañas.","montañismo"],
+ ["Deporte","O","e","Competición deportiva internacional que se celebra cada cuatro años y cuyo símbolo son cinco aros.","olimpiadas|olimpiada|juegos olímpicos|juegos olimpicos|olimpiadas"],
+ ["Deporte","P","e","Deporte de raqueta que se juega en una pista con paredes, muy popular en España.","pádel|padel"],
+ ["Deporte","Q","c","Deporte de invierno en el que te deslizas por la nieve con dos tablas.","esquí|esqui"],
+ ["Deporte","R","e","En el fútbol, acción de esquivar a un rival llevando el balón.","regate"],
+ ["Deporte","S","e","Deporte que consiste en deslizarse sobre las olas con una tabla.","surf|surfing"],
+ ["Deporte","T","e","Deporte de raqueta con red que se juega en pistas de tierra batida, hierba o cemento.","tenis"],
+ ["Deporte","U","c","Lucha tradicional japonesa entre luchadores muy pesados.","sumo"],
+ ["Deporte","V","e","Deporte en el que dos equipos golpean el balón con las manos por encima de una red.","voleibol|voley|vóley|balonvolea"],
+ ["Deporte","W","e","Deporte acuático que se practica sobre una tabla con vela.","windsurf"],
+ ["Deporte","X","c","Deporte de combate con guantes que se practica en un ring.","boxeo"],
+ ["Deporte","Y","c","Deporte de equipo que se juega con un balón ovalado.","rugby"],
+ ["Deporte","Z","c","Capacidad física básica que permite vencer una resistencia.","fuerza"],
+ ["Cuerpo humano","A","e","Vaso sanguíneo que lleva la sangre desde el corazón al resto del cuerpo.","arteria|arterias"],
+ ["Cuerpo humano","B","e","Músculo del brazo que tiene dos cabezas.","bíceps|biceps"],
+ ["Cuerpo humano","C","e","Órgano que bombea la sangre por todo el cuerpo.","corazón|corazon"],
+ ["Cuerpo humano","D","e","Músculo principal de la respiración, situado debajo de los pulmones.","diafragma"],
+ ["Cuerpo humano","E","e","Órgano en forma de bolsa donde se digieren los alimentos después del esófago.","estómago|estomago"],
+ ["Cuerpo humano","F","e","Hueso más largo del cuerpo humano.","fémur|femur"],
+ ["Cuerpo humano","G","e","Órganos que fabrican sustancias como las hormonas, la saliva o el sudor.","glándulas|glandulas|glándula|glandula"],
+ ["Cuerpo humano","H","e","Órgano grande del abdomen que produce la bilis.","hígado|higado"],
+ ["Cuerpo humano","I","e","Órgano largo y enrollado donde se absorben los nutrientes.","intestino|intestinos"],
+ ["Cuerpo humano","J","c","Órgano de la vista.","ojo|ojos"],
+ ["Cuerpo humano","K","e","Unidad con la que se mide la energía que aportan los alimentos.","kilocaloría|kilocaloria|kilocalorías|kilocalorias"],
+ ["Cuerpo humano","L","e","Órgano de la boca con el que notamos los sabores.","lengua"],
+ ["Cuerpo humano","M","e","Órgano que se contrae para que podamos movernos.","músculo|musculo|músculos|musculos"],
+ ["Cuerpo humano","N","e","Órgano del olfato.","nariz"],
+ ["Cuerpo humano","Ñ","c","Órganos que filtran la sangre y fabrican la orina.","riñones|riñón|riñon"],
+ ["Cuerpo humano","O","e","Órgano del sentido de la audición.","oído|oido|oídos|oidos|oreja"],
+ ["Cuerpo humano","P","e","Órganos donde el oxígeno del aire pasa a la sangre.","pulmones|pulmón|pulmon"],
+ ["Cuerpo humano","Q","c","Tubo que lleva el aire desde la laringe hasta los bronquios.","tráquea|traquea"],
+ ["Cuerpo humano","R","e","Articulación que une el muslo con la pierna.","rodilla"],
+ ["Cuerpo humano","S","e","Líquido rojo que recorre el cuerpo por venas y arterias.","sangre"],
+ ["Cuerpo humano","T","e","Estructura que une un músculo con un hueso.","tendón|tendon|tendones"],
+ ["Cuerpo humano","U","e","Parte dura que protege la punta de los dedos.","uña|uñas"],
+ ["Cuerpo humano","V","e","Vasos sanguíneos que devuelven la sangre al corazón.","venas|vena"],
+ ["Cuerpo humano","X","c","Gas del aire que necesitan todas nuestras células.","oxígeno|oxigeno"],
+ ["Cuerpo humano","Z","c","Parte del cuerpo donde se encuentra el cerebro.","cabeza"],
+ ["Respiración","A","e","Pequeños sacos en los pulmones donde se produce el intercambio de gases con la sangre.","alvéolos|alveolos|alvéolo|alveolo|alveolos pulmonares"],
+ ["Respiración","B","e","Siglas del test en reposo que mide en segundos el tiempo hasta sentir el primer deseo distintivo de respirar tras una exhalación normal.","BOLT|test bolt|bol|bolt test|volt|bold"],
+ ["Respiración","C","e","Estructuras internas de la nariz encargadas de calentar, humedecer, filtrar y ralentizar el aire que inhalamos.","cornetes|cornete|cornetes nasales"],
+ ["Respiración","D","e","Gas considerado desecho que es clave para la respiración.","dióxido de carbono|dioxido de carbono|co2|ce o dos"],
+ ["Respiración","E","e","Hormona segregada por los riñones que estimula la producción de glóbulos rojos cuando entrenamos con apneas simulando altitud.","eritropoyetina|epo|eritropoietina"],
+ ["Respiración","F","e","Número de respiraciones que realizamos en un minuto.","frecuencia respiratoria|frecuencia"],
+ ["Respiración","G","e","Células sanguíneas encargadas de transportar el oxígeno y que el bazo libera a la circulación durante las apneas intensas.","glóbulos rojos|globulos rojos|glóbulo rojo|globulo rojo"],
+ ["Respiración","H","e","Exceso de ventilación pulmonar que elimina demasiado dióxido de carbono y reduce la oxigenación celular.","hiperventilación|hiperventilacion"],
+ ["Respiración","I","e","Músculos situados entre las costillas que colaboran en la expansión tridimensional de la caja torácica.","intercostales|músculos intercostales|musculos intercostales"],
+ ["Respiración","I","e","Trastorno del sueño que podemos combatir activando el sistema nervioso parasimpático mediante ejercicios de respiración.","insomnio"],
+ ["Respiración","J","e","Respiración rápida, ruidosa y superficial por la boca que debemos evitar tras romper una apnea en nuestros entrenamientos.","jadeo|jadear|jadeos"],
+ ["Respiración","K","e","Médico ucraniano pionero en investigar los peligros de la hiperventilación crónica y creador del método en el que se inspiró Patrick McKeown.","Konstantin Buteyko|konstantin|constantin buteyko|buteyko"],
+ ["Respiración","L","e","Órgano muscular que en reposo debe descansar pegado al paladar para garantizar el sellado labial y la respiración nasal.","lengua"],
+ ["Respiración","M","e","Cinta adhesiva diseñada específicamente para rodear los labios y garantizar la respiración nasal durante el sueño.","MyoTape|myo tape|maio tape|maiotape|mio tape|miotape"],
+ ["Respiración","N","e","Personaje de cómic que enseña cómo mejorar tu respiración.","Nosy|nosi|nosey|nozy"],
+ ["Respiración","Ñ","c","Momento del día ideal para medir nuestro test BOLT en condiciones de reposo.","mañana|por la mañana|la mañana"],
+ ["Respiración","O","e","Gas vasodilatador, broncodilatador y antibacteriano que se produce en los senos paranasales y se potencia con el ejercicio de humming.","óxido nítrico|oxido nitrico|óxido|oxido"],
+ ["Respiración","P","e","Rama del sistema nervioso autónomo encargada del descanso, la recuperación y la digestión, que activamos con exhalaciones lentas.","parasimpático|parasimpatico|sistema parasimpático|sistema parasimpatico"],
+ ["Respiración","Q","e","Receptores nerviosos del tronco encefálico y las arterias que detectan el aumento de dióxido de carbono y envían la señal de respirar.","quimiorreceptores|quimiorreceptor|quimioreceptores"],
+ ["Respiración","R","e","Ruido respiratorio nocturno causado principalmente por la vibración de los tejidos de la garganta al dormir con la boca abierta.","ronquido|ronquidos|roncar"],
+ ["Respiración","S","e","Ejercicio de reseteo rápido para el estrés que consiste en una doble inhalación nasal seguida de una exhalación larga y lenta por la boca.","suspiro fisiológico|suspiro fisiologico|suspiro"],
+ ["Respiración","T","e","Capacidad de nuestro cuerpo y nuestros quimiorreceptores para soportar niveles más altos de dióxido de carbono sin entrar en pánico ni jadear.","tolerancia al CO2|tolerancia al dióxido de carbono|tolerancia al dioxido de carbono|tolerancia"],
+ ["Respiración","U","e","Punto o límite fisiológico, como el aeróbico o el de lactato, que logramos retrasar cuando entrenamos la respiración funcional.","umbral|umbrales"],
+ ["Respiración","V","e","Nervio craneal más largo del cuerpo, clave del sistema parasimpático, que estimulamos mediante la respiración diafragmática y lenta.","vago|nervio vago"],
+ ["Respiración","W","e","Nombre del creador del famoso método holandés que utiliza hiperventilaciones y frío, técnica que siempre filtramos bajo estrictas reglas de seguridad.","Wim Hof|wim|wimhof|vim hof"],
+ ["Respiración","X","c","Estado de disminución de oxígeno en la sangre y los tejidos que provocamos de forma controlada e intermitente en las apneas largas.","hipoxia|hipoxemia"],
+ ["Respiración","Y","e","Disciplina milenaria de la que provienen técnicas como el pranayama o bhastrika, que adaptamos con base científica.","yoga"],
+ ["Respiración","Z","e","Corredor legendario pionero en experimentar el entrenamiento con pausas respiratorias.","Zátopek|zatopek|Emil Zátopek|emil zatopek"]
+];
+const SEED_TEMAS=[...new Set(SEED.map(r=>r[0]))];
+function seedQuestions(){return SEED.map(r=>({id:uid(),tema:r[0],letra:r[1],tipo:r[2]==="c"?"contiene":"empieza",pregunta:r[3],respuestas:r[4]}))}
+
+let preguntas = load(KEY.q,null) || seedQuestions();
+/* Añade temáticas de ejemplo nuevas a navegadores que ya tenían preguntas guardadas (una sola vez por temática) */
+(function migrateSeeds(){
+  const done=load("rosco.temasSembrados",null)||[];
+  const missing=SEED_TEMAS.filter(t=>!done.includes(t));
+  if(!missing.length) return;
+  const exist=new Set(preguntas.map(p=>p.tema));
+  const add=seedQuestions().filter(q=>missing.includes(q.tema)&&!exist.has(q.tema));
+  if(add.length){preguntas=preguntas.concat(add); save(KEY.q,preguntas)}
+  save("rosco.temasSembrados",done.concat(missing));
+})();
+let scores = load(KEY.s,[]);
+let adminCfg = load(KEY.a,{pin:"1234"});
+let adminIn = false;
+const savePreg = ()=>save(KEY.q,preguntas);
+/* Etiquetas por categoría: {"Respiración":{etiquetas:["Salud"]}} */
+let catMeta = load(KEY_CAT,{});
+(function seedTags(){let ch=false;for(const t in SEED_TAGS){if(!catMeta[t]&&preguntas.some(p=>p.tema===t)){catMeta[t]={etiquetas:SEED_TAGS[t].slice()};ch=true}} if(ch) save(KEY_CAT,catMeta)})();
+const saveCats = ()=>save(KEY_CAT,catMeta);
+const tagsOf = t=>(catMeta[t]&&catMeta[t].etiquetas)||[];
+function allTags(list){const s=new Set();(list||temas()).forEach(t=>tagsOf(t).forEach(g=>s.add(g)));return [...s].sort((a,b)=>a.localeCompare(b,"es"))}
+/* Categorías ocultas: no salen en la pantalla principal, solo se juegan con un enlace compartido */
+const isHidden=t=>!!(catMeta[t]&&catMeta[t].oculta);
+function temasVisibles(){return temas().filter(t=>!isHidden(t))}
+function setMeta(t,patch){catMeta[t]=Object.assign({etiquetas:[]},catMeta[t]||{},patch);saveCats()}
+function parseTags(s){const out=[];String(s).split(",").map(x=>x.trim()).filter(Boolean).forEach(x=>{if(!out.some(y=>norm(y)===norm(x))) out.push(x)});return out}
+const temas = ()=>[...new Set(preguntas.map(p=>p.tema))].sort((a,b)=>a.localeCompare(b,"es"));
+
+/* ---------- Normalización y corrección ---------- */
+function norm(s){
+  return String(s).toLowerCase()
+    .replace(/[áàâä]/g,"a").replace(/[éèêë]/g,"e").replace(/[íìîï]/g,"i").replace(/[óòôö]/g,"o").replace(/[úùûü]/g,"u")
+    .replace(/[^a-zñ0-9 ]/g," ").replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  if(a===b) return 0; if(!a.length) return b.length; if(!b.length) return a.length;
+  let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1))}prev=cur}
+  return prev[b.length];
+}
+const RELLENO = new Set(["es","la","el","los","las","un","una","unos","unas","respuesta","creo","que","pues","eh","em","mm","vale","se","llama","son"]);
+function isPass(t){const n=norm(t);return n.includes("pasapalabra")||n.includes("pasa palabra")||n.includes("pasar palabra")||/^(pasa|paso|siguiente|pasapalabras)$/.test(n)}
+function isCorrect(t,respuestas){
+  const n=norm(t); if(!n) return false;
+  const words=n.split(" ").filter(w=>!RELLENO.has(w)); const core=words.join(" ");
+  for(const raw of String(respuestas).split("|")){
+    const a=norm(raw); if(!a) continue;
+    if(core===a||(" "+n+" ").includes(" "+a+" ")) return true;
+    const tol=a.length>=9?2:a.length>=5?1:0;
+    if(lev(core,a)<=tol) return true;
+    if(!a.includes(" ")) for(const w of words) if(lev(w,a)<=tol) return true;
+  }
+  return false;
+}
+function checkLetter(q){
+  const L=norm(q.letra)||q.letra.toLowerCase(); const first=norm(q.respuestas.split("|")[0]);
+  if(q.tipo==="empieza"&&!first.startsWith(L)) return `La respuesta "${q.respuestas.split("|")[0].trim()}" no empieza por ${q.letra}. ¿Querías "Contiene la"?`;
+  if(q.tipo==="contiene"&&!first.includes(L)) return `La respuesta "${q.respuestas.split("|")[0].trim()}" no contiene la ${q.letra}.`;
+  return "";
+}
+
+/* ---------- Navegación ---------- */
+const VIEWS=["setup","game","result","scores","admin","waitlist"];
+function show(v){
+  VIEWS.forEach(x=>$("#v-"+x).hidden=x!==v);
+  document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current",String(b.dataset.view===v||(v==="result"&&b.dataset.view==="setup")||(v==="game"&&b.dataset.view==="setup"))));
+  if(v==="setup") fillSetup();
+  if(v==="scores") renderScores();
+  if(v==="admin") renderAdmin();
+  if(v==="waitlist") renderWaitlist();
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("#nav button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
+function lockNav(on){document.querySelectorAll("#nav button").forEach(b=>b.disabled=on)}
+
+/* ---------- Entorno ---------- */
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+function envWarnings(){
+  const w=[];
+  if(!SR) w.push("Este navegador no reconoce la voz. Usa Chrome o Edge para responder hablando. Aquí podrás responder escribiendo o en modo árbitro.");
+  if(!window.isSecureContext) w.push("Para usar cámara y micrófono abre la app desde una dirección https (o el archivo directamente en Chrome).");
+  if(!("speechSynthesis" in window)) w.push("Este navegador no tiene voz en off: las preguntas solo se mostrarán en pantalla.");
+  $("#envWarn").innerHTML=w.map(x=>`<p class="warn">${esc(x)}</p>`).join("");
+}
+
+/* ---------- Voz en off ---------- */
+/* Voz única: "Google español" (es-ES). Si el navegador no la tiene (Edge, Safari, móviles), usa la voz es-ES del sistema. */
+let voz=null;
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  const vs=speechSynthesis.getVoices();
+  voz=vs.find(v=>v.name==="Google español")||vs.find(v=>/google/i.test(v.name)&&v.lang==="es-ES")||vs.find(v=>v.lang==="es-ES")||vs.find(v=>/^es/i.test(v.lang))||null;
+}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.addEventListener?.("voiceschanged",loadVoices)}
+/* Las voces de Google en Chrome se cortan si una frase dura más de ~15 s: se lee por trozos cortos */
+function trozos(text){
+  const out=[];
+  (String(text).match(/[^.!?:;]+[.!?:;]*\s*/g)||[]).map(s=>s.trim()).forEach(s=>{
+    if(s.length<=160){ if(s) out.push(s); return }
+    let cur="";
+    (s.match(/[^,]+,?\s*/g)||[]).map(p=>p.trim()).forEach(p=>{ if((cur+" "+p).length>160&&cur){out.push(cur);cur=p} else cur=cur?cur+" "+p:p });
+    if(cur) out.push(cur);
+  });
+  return out.length?out:[String(text)];
+}
+let speakT=0, speakTok=0;
+function speak(text,cb){
+  clearTimeout(speakT);
+  const tok=++speakTok;
+  if(!("speechSynthesis" in window)){ if(cb) speakT=setTimeout(cb,300); return }
+  speechSynthesis.cancel(); if(!voz) loadVoices();
+  const parts=trozos(text); let i=0;
+  const step=()=>{
+    if(tok!==speakTok) return;
+    if(i>=parts.length){ cb&&cb(); return }
+    const t=parts[i++]; const u=new SpeechSynthesisUtterance(t); u.lang="es-ES"; if(voz) u.voice=voz; u.rate=1;
+    let done=false; const fin=()=>{if(done) return; done=true; clearTimeout(speakT); step()};
+    u.onend=fin; u.onerror=fin;
+    clearTimeout(speakT); speakT=setTimeout(fin,2500+t.length*90);
+    speechSynthesis.speak(u);
+  };
+  step();
+}
+
+/* ---------- Cámara / micro ---------- */
+let stream=null;
+function stopStream(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+async function enableMedia(){
+  if(!navigator.mediaDevices?.getUserMedia){$("#permStatus").textContent="Este navegador no permite usar cámara y micrófono.";return false}
+  const wantCam=$("#pCam").checked;
+  try{
+    stopStream();
+    /* Solo al grabar: sin cancelación de eco ni supresión de ruido, para que la voz en off de los altavoces entre en el vídeo.
+       Sin grabar: ajustes normales del micro, que son los que mejor van con el reconocimiento de voz. */
+    const raw=$("#pRec").checked;
+    stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:!raw,noiseSuppression:!raw,autoGainControl:true},video:wantCam?{facingMode:"user",width:{ideal:1280},height:{ideal:720}}:false});
+    $("#prevVideo").srcObject=stream; $("#camVideo").srcObject=stream;
+    $("#permStatus").innerHTML=`<span class="ok">Permisos concedidos: ${wantCam?"cámara y micrófono":"micrófono"} activos.</span>`;
+    return true;
+  }catch(e){
+    const m={NotAllowedError:"Has denegado el permiso. Actívalo desde el candado de la barra de direcciones y vuelve a intentarlo.",NotFoundError:"No se ha encontrado cámara o micrófono en este equipo.",NotReadableError:"La cámara o el micro están ocupados por otra aplicación."}[e.name]||("No se ha podido activar: "+e.message);
+    $("#permStatus").textContent=m; return false;
+  }
+}
+$("#btnPerm").addEventListener("click",enableMedia);
+$("#pCam").addEventListener("change",()=>{ if(stream) enableMedia() });
+$("#pRec").addEventListener("change",()=>{ if(stream) enableMedia() });
+/* Arranca el reconocimiento. Si estamos grabando, le pasamos la pista del micro que ya está abierta
+   (Chrome reciente lo admite; las versiones antiguas ignoran el parámetro y abren el micro por su cuenta). */
+function srStart(r){
+  const t=stream&&$("#pRec").checked?stream.getAudioTracks()[0]:null;
+  if(t&&t.readyState==="live"){ try{ r.start(t); return }catch(e){} }
+  r.start();
+}
+const SR_ERR={"not-allowed":"El navegador no deja usar el micrófono para reconocer voz (permiso denegado).","service-not-allowed":"El servicio de reconocimiento de voz está bloqueado en este navegador.","audio-capture":"El reconocimiento no puede abrir el micrófono: puede que otra parte de la app o del equipo lo esté usando.","network":"El reconocimiento de voz necesita internet y no hay conexión.","no-speech":"No se ha oído nada. Habla más cerca del micro o sube su volumen en el sistema.","aborted":"Se ha cortado la escucha.","language-not-supported":"El reconocimiento no admite español en este navegador."};
+$("#btnMicTest").addEventListener("click",async()=>{
+  const out=$("#micTest");
+  if(!SR){out.textContent="Este navegador no tiene reconocimiento de voz. Usa Chrome o Edge.";return}
+  if(($("#pRec").checked||$("#pCam").checked)&&!stream) await enableMedia();
+  const r=new SR(); r.lang="es-ES"; r.interimResults=true; r.continuous=false;
+  out.textContent="Escuchando… di una palabra, por ejemplo «diafragma».";
+  let got=false;
+  r.onresult=e=>{const res=e.results[e.results.length-1]; out.textContent=(res.isFinal?"✓ He oído: ":"… ")+res[0].transcript; if(res.isFinal) got=true};
+  r.onerror=e=>{got=true; out.textContent="✗ "+(SR_ERR[e.error]||("Error: "+e.error))};
+  r.onend=()=>{ if(!got) out.textContent="✗ La escucha terminó sin oír nada. Revisa qué micrófono usa Chrome (icono del candado → Micrófono)." };
+  try{srStart(r)}catch(e){out.textContent="✗ No se ha podido iniciar: "+e.message}
+});
+
+/* ---------- Grabación (lienzo con rosco + cámara + audio del micro) ---------- */
+let audioCtx=null;
+let recorder=null, chunks=[], drawOn=false, canvas=null, ctx=null, recUrl=null, recExt="webm";
+function pickMime(){
+  if(!window.MediaRecorder) return "";
+  for(const m of ["video/mp4;codecs=avc1,mp4a","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm","video/mp4"]) if(MediaRecorder.isTypeSupported(m)) return m;
+  return "";
+}
+function startRecording(){
+  if(!stream||!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador no puede grabar: se juega sin grabar");return}
+  canvas=document.createElement("canvas"); canvas.width=720; canvas.height=900; ctx=canvas.getContext("2d");
+  drawOn=true; drawLoop();
+  const out=canvas.captureStream(30);
+  /* Compresor + ganancia: sube lo que llega flojo (la voz en off por los altavoces) sin que tu voz sature */
+  let audioTracks=stream.getAudioTracks();
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(AC&&audioTracks.length){
+      audioCtx=new AC(); audioCtx.resume&&audioCtx.resume();
+      const src=audioCtx.createMediaStreamSource(new MediaStream(audioTracks));
+      const pre=audioCtx.createGain(); pre.gain.value=2.2;
+      const comp=audioCtx.createDynamicsCompressor();
+      comp.threshold.value=-38; comp.knee.value=18; comp.ratio.value=8; comp.attack.value=0.004; comp.release.value=0.25;
+      const post=audioCtx.createGain(); post.gain.value=2.6;
+      const dest=audioCtx.createMediaStreamDestination();
+      src.connect(pre); pre.connect(comp); comp.connect(post); post.connect(dest);
+      if(audioCtx.state!=="closed"&&dest.stream.getAudioTracks().length) audioTracks=dest.stream.getAudioTracks();
+    }
+  }catch(e){ audioTracks=stream.getAudioTracks() }
+  audioTracks.forEach(t=>out.addTrack(t));
+  const mime=pickMime(); recExt=mime.includes("mp4")?"mp4":"webm";
+  try{recorder=new MediaRecorder(out,mime?{mimeType:mime,videoBitsPerSecond:3_000_000}:undefined)}catch(e){recorder=new MediaRecorder(out)}
+  chunks=[];
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size) chunks.push(e.data)};
+  recorder.onstop=()=>{
+    drawOn=false;
+    if(audioCtx){try{audioCtx.close()}catch(e){} audioCtx=null}
+    const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+    if(recUrl) URL.revokeObjectURL(recUrl);
+    recUrl=URL.createObjectURL(blob);
+    const v=$("#rVideo"); v.src=recUrl; v.hidden=false;
+    const a=$("#rDownload"); a.href=recUrl; a.download=`enroscados-${(game?.jugador||"jugador").replace(/\W+/g,"-")}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.${recExt}`; a.hidden=false;
+    $("#rVideoMsg").textContent=`Vídeo listo (${(blob.size/1048576).toFixed(1)} MB). La voz en off se graba a través del micrófono: usa altavoces, no auriculares.`;
+  };
+  recorder.start(1000);
+  $("#recBadge").hidden=false;
+}
+function stopRecording(){ $("#recBadge").hidden=true; if(recorder&&recorder.state!=="inactive") recorder.stop() }
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+let PAL=null;
+function readPal(){PAL={night:cssVar("--night"),panel:cssVar("--panel"),line:cssVar("--line"),cam1:cssVar("--cam1"),cam2:cssVar("--cam2"),ink:cssVar("--ink"),col:{pendiente:cssVar("--blue"),acierto:cssVar("--green"),fallo:cssVar("--red"),vacio:cssVar("--grey")}}}
+function wrap(c,text,x,y,maxW,lh,maxLines){
+  const words=text.split(" "); let line="", lines=[];
+  for(const w of words){const t=line?line+" "+w:w; if(c.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t}
+  if(line) lines.push(line);
+  if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]+="…"}
+  lines.forEach((l,i)=>c.fillText(l,x,y+i*lh));
+}
+function drawLoop(){
+  if(!drawOn) return;
+  const c=ctx, W=720, cx=360, cy=360; if(!PAL) readPal();
+  c.fillStyle=PAL.night; c.fillRect(0,0,W,900);
+  const g=c.createRadialGradient(cx,cy,50,cx,cy,360); g.addColorStop(0,PAL.cam1); g.addColorStop(1,PAL.night); c.fillStyle=g; c.fillRect(0,0,W,720);
+  const vid=$("#camVideo"), R=245;
+  c.save(); c.beginPath(); c.arc(cx,cy,R,0,Math.PI*2); c.clip();
+  c.fillStyle=PAL.cam2; c.fillRect(cx-R,cy-R,R*2,R*2);
+  if(vid.videoWidth&&$("#pCam").checked){
+    const s=Math.max(2*R/vid.videoWidth,2*R/vid.videoHeight), dw=vid.videoWidth*s, dh=vid.videoHeight*s;
+    c.translate(cx,cy); c.scale(-1,1); c.drawImage(vid,-dw/2,-dh/2,dw,dh);
+  }
+  c.restore();
+  c.lineWidth=5; c.strokeStyle=PAL.line; c.beginPath(); c.arc(cx,cy,R,0,Math.PI*2); c.stroke();
+  if(game){
+    const n=game.items.length;
+    game.items.forEach((it,i)=>{
+      const a=-Math.PI/2+i*2*Math.PI/n, x=cx+318*Math.cos(a), y=cy+318*Math.sin(a), cur=i===game.idx&&game.running, r=cur?31:25;
+      c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fillStyle=PAL.col[it.estado]; c.fill();
+      c.lineWidth=cur?5:2; c.strokeStyle=cur?"#ffc72e":"rgba(255,255,255,.4)"; c.stroke();
+      c.fillStyle=it.estado==="vacio"?"rgba(255,255,255,.4)":"#fff"; c.font=`800 ${cur?30:24}px "Bricolage Grotesque", sans-serif`; c.textAlign="center"; c.textBaseline="middle"; c.fillText(it.letra,x,y+1);
+    });
+    c.textBaseline="alphabetic"; c.textAlign="left"; c.font='800 30px "Bricolage Grotesque", sans-serif';
+    c.fillStyle="#16a85a"; c.beginPath(); c.arc(46,46,32,0,Math.PI*2); c.fill(); c.fillStyle="#fff"; c.textAlign="center"; c.fillText(game.ok(),46,57);
+    c.fillStyle="#dd3b35"; c.beginPath(); c.arc(W-46,46,32,0,Math.PI*2); c.fill(); c.fillStyle="#fff"; c.fillText(game.ko(),W-46,57);
+    c.fillStyle="#ffc72e"; c.font='800 28px "Bricolage Grotesque", sans-serif'; c.fillText(timeText(),W-60,700);
+    c.fillStyle=PAL.panel; c.fillRect(0,720,W,180); c.fillStyle="#ffc72e"; c.fillRect(0,720,W,5);
+    const it=game.items[game.idx];
+    if(it&&it.q&&game.running){
+      c.textAlign="left"; c.fillStyle="#ffc72e"; c.font='800 26px "Bricolage Grotesque", sans-serif';
+      c.fillText((it.q.tipo==="contiene"?"CONTIENE LA ":"EMPIEZA POR ")+it.letra,28,766);
+      c.fillStyle=PAL.ink; c.font='700 26px "Atkinson Hyperlegible", sans-serif'; wrap(c,it.q.pregunta,28,806,W-56,32,3);
+    }else{
+      c.textAlign="center"; c.fillStyle=PAL.ink; c.font='800 34px "Bricolage Grotesque", sans-serif';
+      c.fillText(`${game.ok()} aciertos · ${game.ko()} fallos`,cx,820);
+    }
+  }
+  requestAnimationFrame(drawLoop);
+}
+
+/* ---------- Juego ---------- */
+let game=null, tickI=0, rec=null, listenTok=0, voiceOff=false;
+/* ---------- Selector de categorías (casillas, buscador, etiquetas) ---------- */
+let selCats=new Set(load("rosco.seleccion",null)||temasVisibles());
+let activeTag="";
+function saveSel(){save("rosco.seleccion",[...selCats])}
+function catItem(t){
+  const n=preguntas.filter(p=>p.tema===t).length;
+  return `<label class="cat"><input type="checkbox" data-cat="${esc(t)}"${selCats.has(t)?" checked":""}><span class="catname">${esc(t)} <small>${n} ${n===1?"pregunta":"preguntas"}</small></span><span class="tags">${tagsOf(t).map(g=>`<span class="tagchip">${esc(g)}</span>`).join("")}</span></label>`;
+}
+function renderCats(){
+  const all=temasVisibles(); selCats=new Set([...selCats].filter(t=>all.includes(t)));
+  const tags=allTags(all); if(activeTag&&!tags.includes(activeTag)) activeTag="";
+  $("#tagBar").innerHTML=tags.length?[`<button type="button" class="tagbtn" data-tag="" aria-pressed="${!activeTag}">Todas las etiquetas</button>`].concat(tags.map(g=>`<button type="button" class="tagbtn" data-tag="${esc(g)}" aria-pressed="${activeTag===g}">${esc(g)}</button>`)).join(""):"";
+  const q=norm($("#catSearch").value);
+  const vis=all.filter(t=>(!activeTag||tagsOf(t).includes(activeTag))&&(!q||norm(t).includes(q)||tagsOf(t).some(g=>norm(g).includes(q))));
+  let html="";
+  if(!all.length) html=`<p class="note" style="margin:8px">No hay categorías disponibles. Pide a tu profesor el enlace del rosco.</p>`;
+  else if(!vis.length) html=`<p class="note" style="margin:8px">Ninguna categoría coincide con la búsqueda.</p>`;
+  else if($("#catGroup").checked){
+    const groups=(activeTag?[activeTag]:tags).map(g=>[g,vis.filter(t=>tagsOf(t).includes(g))]).filter(x=>x[1].length);
+    const sin=vis.filter(t=>!tagsOf(t).length); if(sin.length) groups.push(["Sin etiqueta",sin]);
+    html=groups.map(([g,ts])=>{const allOn=ts.every(t=>selCats.has(t));return `<div class="group"><div class="grouphead"><b>${esc(g)}</b><button type="button" class="btn small" data-grp="${esc(g)}" data-on="${allOn?0:1}">${allOn?"Quitar grupo":"Marcar grupo"}</button></div>${ts.map(catItem).join("")}</div>`}).join("");
+  } else html=vis.map(catItem).join("");
+  $("#catList").innerHTML=html;
+  const ca=$("#catAll"); ca.checked=all.length>0&&selCats.size===all.length; ca.indeterminate=selCats.size>0&&selCats.size<all.length;
+  const pool=preguntas.filter(p=>selCats.has(p.tema)); const letras=new Set(pool.map(p=>p.letra));
+  $("#catSum").textContent=selCats.size?`${selCats.size} ${selCats.size===1?"categoría":"categorías"} · ${pool.length} preguntas · ${letras.size} de 27 letras con pregunta`:"Marca al menos una categoría para jugar.";
+}
+$("#catSearch").addEventListener("input",renderCats);
+$("#catGroup").addEventListener("change",()=>{save("rosco.agrupar",$("#catGroup").checked);renderCats()});
+$("#catAll").addEventListener("change",e=>{selCats=e.target.checked?new Set(temasVisibles()):new Set();saveSel();renderCats()});
+$("#tagBar").addEventListener("click",e=>{const b=e.target.closest("[data-tag]");if(!b) return;activeTag=b.dataset.tag;renderCats()});
+$("#catList").addEventListener("change",e=>{const c=e.target.closest("[data-cat]");if(!c) return;c.checked?selCats.add(c.dataset.cat):selCats.delete(c.dataset.cat);saveSel();renderCats()});
+$("#catList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-grp]"); if(!b) return;
+  const g=b.dataset.grp, on=b.dataset.on==="1", vis=[...$("#catList").querySelectorAll(".group")].find(d=>d.querySelector("[data-grp]")===b);
+  vis.querySelectorAll("[data-cat]").forEach(c=>on?selCats.add(c.dataset.cat):selCats.delete(c.dataset.cat));
+  saveSel(); renderCats();
+});
+$("#catGroup").checked=!!load("rosco.agrupar",false);
+function catsLabel(cs){
+  if(cs.length===temasVisibles().length&&cs.length>1) return "Todas";
+  if(cs.length<=2) return cs.join(" + ");
+  return `${cs.slice(0,2).join(" + ")} y ${cs.length-2} más`;
+}
+function fillSetup(){
+  envWarnings();
+  $("#sharedBox").hidden=!shared; $("#catField").hidden=!!shared;
+  if(shared) $("#sharedName").textContent=`${shared.nombre} · ${shared.preguntas.length} ${shared.preguntas.length===1?"pregunta":"preguntas"}`;
+  renderCats();
+  const n=load("rosco.ultimoJugador",""); if(n&&!$("#pName").value) $("#pName").value=n;
+}
+document.querySelectorAll('input[name="pModo"]').forEach(r=>r.addEventListener("change",()=>$("#segBox").hidden=!$("#pModoTiempo").checked));
+function fmt(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function timeText(){return game.conTiempo?fmt(game.total-game.usado):fmt(game.usado)}
+
+$("#btnStart").addEventListener("click",async()=>{
+  const cats=shared?[shared.nombre]:temasVisibles().filter(t=>selCats.has(t)), jugador=$("#pName").value.trim()||"Jugador";
+  if(!cats.length){toast("Marca al menos una categoría");return}
+  save("rosco.ultimoJugador",jugador);
+  const fuente=shared?shared.preguntas:preguntas.filter(p=>cats.includes(p.tema));
+  const items=LETRAS.map(letra=>{
+    const pool=fuente.filter(p=>p.letra===letra);
+    const q=pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+    return {letra,q,estado:q?"pendiente":"vacio",dicho:""};
+  });
+  if(!items.some(i=>i.q)){toast("Las categorías marcadas no tienen preguntas. Añádelas en Administrar.");return}
+  const wantRec=$("#pRec").checked, wantCam=$("#pCam").checked;
+  if((wantRec||wantCam)&&!stream) await enableMedia();
+  game={jugador,tema:cats,temaLabel:shared?shared.nombre:catsLabel(cats),items,idx:-1,running:true,phase:"reading",
+    conTiempo:$("#pModoTiempo").checked,total:Math.max(30,+$("#pSegs").value||180),usado:0,last:null,inicio:Date.now(),
+    ok(){return this.items.filter(i=>i.estado==="acierto").length}, ko(){return this.items.filter(i=>i.estado==="fallo").length}};
+  buildRosco();
+  $("#cam").classList.toggle("hasvideo",!!(stream&&wantCam&&stream.getVideoTracks().length));
+  $("#camVideo").hidden=!(stream&&wantCam);
+  $("#gWho").textContent=`${jugador} · ${game.temaLabel}`;
+  $("#rVideoBox").hidden=true; $("#rVideo").hidden=true; $("#rDownload").hidden=true;
+  voiceOff=false; lockNav(true); show("game");
+  if(wantRec&&stream){ startRecording(); $("#rVideoBox").hidden=false; $("#rVideoMsg").textContent="Preparando el vídeo…" }
+  let lastT=performance.now(); clearInterval(tickI);
+  tickI=setInterval(()=>{
+    const now=performance.now(), dt=(now-lastT)/1000; lastT=now;
+    if(!game||!game.running) return;
+    if(game.phase==="answer"){ game.usado+=dt; if(game.conTiempo&&game.usado>=game.total){game.usado=game.total; finish("tiempo")} }
+    $("#gTime").textContent=timeText();
+  },200);
+  speak(cats.length===1?`Comenzamos el rosco de ${cats[0]}.`:"Comenzamos el rosco.",next);
+});
+
+function buildRosco(){
+  const st=$("#stage"); st.querySelectorAll(".L").forEach(e=>e.remove());
+  const n=game.items.length;
+  game.items.forEach((it,i)=>{
+    const a=-Math.PI/2+i*2*Math.PI/n, d=document.createElement("div");
+    d.className="L"; d.textContent=it.letra; d.style.left=(50+44*Math.cos(a))+"%"; d.style.top=(50+44*Math.sin(a))+"%";
+    st.appendChild(d); it.el=d;
+  });
+  renderGame();
+}
+function renderGame(){
+  game.items.forEach((it,i)=>{it.el.className="L "+it.estado+(i===game.idx&&game.running?" cur":"")});
+  $("#gOk").textContent=game.ok(); $("#gKo").textContent=game.ko(); $("#gTime").textContent=timeText();
+  const it=game.items[game.idx];
+  if(it){ $("#bigLetter").textContent=it.letra; $("#qLabel").textContent=(it.q.tipo==="contiene"?"Contiene la ":"Empieza por ")+it.letra; $("#qText").textContent=it.q.pregunta }
+}
+function setStatus(t,cls){const s=$("#gStatus");s.textContent=t;s.className="pill status "+(cls||"")}
+const cur=()=>game.items[game.idx];
+function next(){
+  if(!game||!game.running) return;
+  const n=game.items.length;
+  for(let k=1;k<=n;k++){const j=(game.idx+k+n)%n; if(game.items[j].estado==="pendiente"){game.idx=j; return ask()}}
+  finish("completo");
+}
+function ask(){
+  game.phase="reading"; stopListening(); renderGame(); $("#heard").textContent=""; $("#typed").value="";
+  setStatus("Leyendo…");
+  const it=cur();
+  speak(`${it.q.tipo==="contiene"?"Contiene la":"Empieza por la"} ${NOMBRE_LETRA[it.letra]||it.letra}. ${it.q.pregunta}`,startListening);
+}
+function startListening(){
+  if(!game||!game.running) return;
+  game.phase="answer";
+  if(!SR||voiceOff){setStatus("Tu turno: escribe o usa modo árbitro");return}
+  setStatus("Escuchando…","listen");
+  const tok=++listenTok;
+  try{rec&&rec.abort()}catch(e){}
+  rec=new SR(); rec.lang="es-ES"; rec.interimResults=true; rec.maxAlternatives=4; rec.continuous=false;
+  let handled=false;
+  rec.onresult=e=>{
+    if(tok!==listenTok) return;
+    let fin=null, interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i]; if(r.isFinal) fin=Array.from(r).map(a=>a.transcript); else interim+=r[0].transcript}
+    if(interim) $("#heard").textContent="… "+interim;
+    if(fin&&!handled){handled=true; onAnswer(fin)}
+  };
+  rec.onerror=e=>{
+    if(tok!==listenTok) return;
+    if(["not-allowed","service-not-allowed","audio-capture","network"].includes(e.error)){
+      handled=true; voiceOff=true;
+      setStatus("Voz desactivada: escribe o usa modo árbitro");
+      toast((SR_ERR[e.error]||e.error)+" Sigue escribiendo o en modo árbitro.");
+    }
+  };
+  rec.onend=()=>{
+    if(tok!==listenTok||handled) return;
+    setTimeout(()=>{ if(tok===listenTok&&game&&game.running&&game.phase==="answer") startListening() },250);
+  };
+  try{srStart(rec)}catch(e){}
+}
+function stopListening(){listenTok++; try{rec&&rec.abort()}catch(e){} rec=null}
+
+function onAnswer(alts){
+  if(!game||!game.running||!["answer","reading"].includes(game.phase)) return;
+  game.phase="feedback"; stopListening();
+  const said=alts[0]||""; $("#heard").textContent=`Has dicho: "${said.trim()}"`;
+  if(alts.some(isPass)) return pasar();
+  const it=cur(); it.dicho=said;
+  resolve(alts.some(a=>isCorrect(a,it.q.respuestas))?"acierto":"fallo");
+}
+function resolve(estado){
+  const it=cur(); it.estado=estado; game.last={i:game.idx,estado};
+  $("#btnUndo").hidden=estado!=="fallo";
+  renderGame();
+  const sol=it.q.respuestas.split("|")[0].trim();
+  setStatus(estado==="acierto"?"¡Correcto!":"Fallo");
+  if(estado==="fallo") $("#heard").textContent+=(($("#heard").textContent)?" · ":"")+`La respuesta era: ${sol}`;
+  speak(estado==="acierto"?"¡Correcto!":`No. La respuesta era ${sol}.`,()=>setTimeout(next,250));
+}
+function pasar(){
+  if(!game||!game.running) return;
+  game.phase="feedback"; stopListening(); $("#btnUndo").hidden=true; setStatus("Pasapalabra");
+  speak("Pasapalabra.",next);
+}
+function finish(reason){
+  if(!game||!game.running) return;
+  game.running=false; game.phase="end"; stopListening(); clearInterval(tickI); clearTimeout(speakT);
+  if("speechSynthesis" in window) speechSynthesis.cancel();
+  renderGame(); lockNav(false);
+  const ok=game.ok(), ko=game.ko(), pend=game.items.filter(i=>i.estado==="pendiente").length, total=game.items.filter(i=>i.q).length;
+  const sc={id:uid(),fecha:new Date().toISOString(),jugador:game.jugador,tema:game.temaLabel,cats:game.tema,aciertos:ok,fallos:ko,pendientes:pend,total,segundos:Math.round(game.usado),modo:game.conTiempo?`Con tiempo (${fmt(game.total)})`:"Sin tiempo",fin:reason};
+  scores.push(sc); save(KEY.s,scores);
+  $("#rTitle").textContent=reason==="tiempo"?"¡Se acabó el tiempo!":reason==="plantado"?"Te has plantado":ok===total?"¡Rosco completo!":"Fin del rosco";
+  $("#rSub").textContent=`${game.jugador} · ${game.temaLabel} · ${ok} de ${total} letras`;
+  $("#rOk").textContent=ok; $("#rKo").textContent=ko; $("#rPend").textContent=pend; $("#rTime").textContent=fmt(game.usado);
+  speak(`${reason==="tiempo"?"Se acabó el tiempo. ":""}Has conseguido ${ok} ${ok===1?"acierto":"aciertos"}.`);
+  setTimeout(()=>{stopRecording(); show("result")},1600);
+}
+$("#btnPass").addEventListener("click",pasar);
+$("#btnRepeat").addEventListener("click",()=>{if(game&&game.running&&game.phase!=="feedback") ask()});
+$("#btnUndo").addEventListener("click",()=>{
+  if(!game||!game.last||game.last.estado!=="fallo") return;
+  game.items[game.last.i].estado="acierto"; game.last.estado="acierto"; $("#btnUndo").hidden=true; renderGame(); toast("Corregido: cuenta como acierto");
+});
+$("#typedForm").addEventListener("submit",e=>{e.preventDefault(); const v=$("#typed").value.trim(); if(v) onAnswer([v])});
+function arbitro(estado){ if(!game||!game.running||game.phase==="feedback") return; game.phase="feedback"; stopListening(); resolve(estado) }
+$("#btnOk").addEventListener("click",()=>arbitro("acierto"));
+$("#btnKo").addEventListener("click",()=>arbitro("fallo"));
+let stopArm=0;
+$("#btnStop").addEventListener("click",()=>{
+  const b=$("#btnStop");
+  if(!stopArm){b.textContent="¿Seguro? Pulsa otra vez";stopArm=setTimeout(()=>{stopArm=0;b.textContent="Plantarse"},3000);return}
+  clearTimeout(stopArm); stopArm=0; b.textContent="Plantarse"; finish("plantado");
+});
+$("#btnAgain").addEventListener("click",()=>show("setup"));
+
+/* ---------- Puntuaciones ---------- */
+function renderScores(){
+  const sel=$("#sTema"), cur=sel.value;
+  const ts=[...new Set(scores.map(s=>s.tema))].sort();
+  sel.innerHTML='<option value="">Todas</option>'+ts.map(t=>`<option>${esc(t)}</option>`).join(""); sel.value=ts.includes(cur)?cur:"";
+  const q=norm($("#sJug").value);
+  const list=scores.filter(s=>(!sel.value||s.tema===sel.value)&&(!q||norm(s.jugador).includes(q))).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const best=list.reduce((m,s)=>!m||s.aciertos>m.aciertos||(s.aciertos===m.aciertos&&s.segundos<m.segundos)?s:m,null);
+  const media=list.length?(list.reduce((a,s)=>a+s.aciertos,0)/list.length).toFixed(1):"0";
+  const completos=list.filter(s=>s.aciertos===s.total&&s.total>0);
+  const rapido=completos.reduce((m,s)=>!m||s.segundos<m.segundos?s:m,null);
+  $("#sSum").innerHTML=`<div class="stat"><b>${list.length}</b><span>Partidas</span></div>
+    <div class="stat"><b>${best?best.aciertos:0}</b><span>Mejor puntuación${best?" · "+esc(best.jugador):""}</span></div>
+    <div class="stat"><b>${media}</b><span>Media de aciertos</span></div>
+    <div class="stat"><b>${rapido?fmt(rapido.segundos):"—"}</b><span>Rosco completo más rápido</span></div>`;
+  $("#sBody").innerHTML=list.length?list.map(s=>`<tr><td>${new Date(s.fecha).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"})}</td><td>${esc(s.jugador)}</td><td>${esc(s.tema)}</td><td class="n">${s.aciertos}/${s.total}</td><td class="n">${s.fallos}</td><td class="n">${s.pendientes}</td><td class="n">${fmt(s.segundos)}</td><td>${esc(s.modo)}</td></tr>`).join(""):`<tr><td colspan="8" class="note">Todavía no hay partidas. Juega un rosco y aparecerá aquí.</td></tr>`;
+}
+$("#sTema").addEventListener("change",renderScores); $("#sJug").addEventListener("input",renderScores);
+
+/* ---------- Administración ---------- */
+$("#fLetra").innerHTML=LETRAS.map(l=>`<option>${l}</option>`).join("");
+let editId=null;
+function renderAdmin(){
+  $("#aLogin").hidden=adminIn; $("#aPanel").hidden=!adminIn;
+  if(!adminIn) return;
+  const sel=$("#aFiltro"), cur=sel.value, ts=temas();
+  sel.innerHTML='<option value="">Todas</option>'+ts.map(t=>`<option>${esc(t)}</option>`).join(""); sel.value=ts.includes(cur)?cur:"";
+  $("#temasList").innerHTML=ts.map(t=>`<option value="${esc(t)}">`).join("");
+  const base=preguntas.filter(p=>!sel.value||p.tema===sel.value);
+  $("#aCob").innerHTML=LETRAS.map(l=>{const n=base.filter(p=>p.letra===l).length;return `<span class="chip${n?"":" zero"}">${l}<small>${n}</small></span>`}).join("");
+  const q=norm($("#aBuscar").value);
+  const list=base.filter(p=>!q||norm(p.pregunta+" "+p.respuestas).includes(q)).sort((a,b)=>LETRAS.indexOf(a.letra)-LETRAS.indexOf(b.letra)||a.tema.localeCompare(b.tema));
+  $("#aBody").innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.letra)}</b><br><span class="note">${p.tipo==="contiene"?"contiene":"empieza"}</span></td><td>${esc(p.tema)}</td><td>${esc(p.pregunta)}</td><td>${esc(p.respuestas.split("|").map(s=>s.trim()).join(" · "))}</td><td style="white-space:nowrap"><button class="btn small" data-edit="${p.id}">Editar</button> <button class="btn small" data-del="${p.id}">Borrar</button></td></tr>`).join(""):`<tr><td colspan="5" class="note">No hay preguntas con este filtro. Pulsa "Nueva pregunta" para crear la primera.</td></tr>`;
+  $("#aCount").textContent=`${list.length} preguntas mostradas · ${preguntas.length} en total · ${ts.length} categorías`;
+  renderCatAdmin();
+  renderSkins();
+}
+function renderCatAdmin(){
+  const q=norm($("#aCatSearch").value);
+  const ts=temas().filter(t=>!q||norm(t).includes(q)||tagsOf(t).some(g=>norm(g).includes(q)));
+  $("#aCatBody").innerHTML=ts.length?ts.map(t=>`<tr><td><b>${esc(t)}</b></td><td class="n">${preguntas.filter(p=>p.tema===t).length}</td><td style="min-width:220px"><input type="text" data-tags="${esc(t)}" value="${esc(tagsOf(t).join(", "))}" placeholder="p. ej. Salud, Primaria"></td><td style="text-align:center"><input type="checkbox" class="hidechk" data-hide="${esc(t)}"${isHidden(t)?" checked":""} aria-label="Ocultar ${esc(t)}"></td><td><button class="btn small" type="button" data-share="${esc(t)}">Compartir</button></td></tr>`).join(""):`<tr><td colspan="5" class="note">Ninguna categoría coincide.</td></tr>`;
+  renderHist();
+}
+/* ---------- Enlace directo a una categoría ----------
+   El enlace lleva dentro las preguntas (comprimidas), así funciona en cualquier dispositivo
+   aunque esa categoría solo exista en el navegador del administrador. */
+function b64u(bytes){let s="";for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64u(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4) s+="=";const b=atob(s);return Uint8Array.from(b,c=>c.charCodeAt(0))}
+async function packCat(t){
+  const json=JSON.stringify({v:1,n:t,s:currentSkin(),q:preguntas.filter(p=>p.tema===t).map(p=>[p.letra,p.tipo==="contiene"?"c":"e",p.pregunta,p.respuestas])});
+  const raw=new TextEncoder().encode(json);
+  if(window.CompressionStream){
+    try{const buf=await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer();return "z"+b64u(new Uint8Array(buf))}catch(e){}
+  }
+  return "u"+b64u(raw);
+}
+async function unpackCat(code){
+  let bytes=unb64u(code.slice(1));
+  if(code[0]==="z"){
+    if(!window.DecompressionStream) throw new Error("Este navegador es demasiado antiguo para abrir el enlace");
+    bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+  }
+  const d=JSON.parse(new TextDecoder().decode(bytes));
+  const qs=(d.q||[]).map(r=>cleanQ({tema:d.n,letra:r[0],tipo:r[1]==="c"?"contiene":"empieza",pregunta:r[2],respuestas:r[3]})).filter(Boolean);
+  if(!qs.length) throw new Error("El enlace no tiene preguntas válidas");
+  return {nombre:String(d.n||"Rosco"),preguntas:qs,skin:SKINS.some(k=>k.id===d.s)?d.s:null};
+}
+$("#aCatBody").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-share]"); if(!b) return;
+  const t=b.dataset.share, code=await packCat(t);
+  const url=location.href.split("#")[0]+"#rosco="+code;
+  $("#shareBox").hidden=false; $("#shareLabel").textContent=`Enlace directo a ${t}`; $("#shareUrl").value=url;
+  $("#shareNote").textContent=location.protocol==="file:"
+    ?"Estás usando la app como archivo en tu ordenador: este enlace solo funcionará aquí. Ábrela desde tu dirección de Vercel para crear enlaces que funcionen en otros dispositivos."
+    :`El enlace incluye las ${preguntas.filter(p=>p.tema===t).length} preguntas de la categoría tal como están ahora. Si las cambias, crea un enlace nuevo.`;
+  $("#shareBox").scrollIntoView({behavior:"smooth",block:"nearest"});
+});
+$("#shareCopy").addEventListener("click",async()=>{
+  const i=$("#shareUrl");
+  try{await navigator.clipboard.writeText(i.value);toast("Enlace copiado")}catch(e){i.focus();i.select();toast("Selecciona el enlace y cópialo con Ctrl+C")}
+});
+let shared=null;
+async function readShared(){
+  const m=location.hash.match(/^#rosco=([zu][A-Za-z0-9_-]+)$/);
+  if(!m){shared=null;return}
+  try{shared=await unpackCat(m[1])}catch(e){shared=null;toast("No se ha podido abrir el enlace: "+e.message)}
+  applySkin(shared&&shared.skin?shared.skin:currentSkin());
+}
+
+/* ---------- Borrar historial (solo administrador) ---------- */
+function histMatches(){
+  const m=$("#hMode").value;
+  if(m==="all") return scores;
+  if(m==="zero") return scores.filter(s=>s.aciertos===0);
+  const c=$("#hCat").value; return scores.filter(s=>s.tema===c);
+}
+function renderHist(){
+  const ts=[...new Set(scores.map(s=>s.tema))].sort((a,b)=>a.localeCompare(b,"es")), sel=$("#hCat"), cur=sel.value;
+  sel.innerHTML=ts.map(t=>`<option>${esc(t)}</option>`).join(""); if(ts.includes(cur)) sel.value=cur;
+  $("#hCatBox").hidden=$("#hMode").value!=="cat";
+  const n=histMatches().length;
+  $("#hCount").textContent=scores.length?`Se borrarán ${n} de ${scores.length} partidas.`:"No hay partidas guardadas.";
+  const b=$("#hDelete"); b.disabled=!n; b.textContent="Borrar"; b.dataset.armed="";
+}
+$("#hMode").addEventListener("change",renderHist); $("#hCat").addEventListener("change",renderHist);
+$("#hDelete").addEventListener("click",()=>{
+  const b=$("#hDelete"), del=histMatches(); if(!del.length) return;
+  if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent=`¿Borrar ${del.length} partidas? Pulsa otra vez`;setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="Borrar"}},4000);return}
+  const ids=new Set(del.map(s=>s.id)); scores=scores.filter(s=>!ids.has(s.id)); save(KEY.s,scores); renderHist(); toast(`${ids.size} partidas borradas`);
+});
+$("#aCatSearch").addEventListener("input",renderCatAdmin);
+$("#aCatBody").addEventListener("change",e=>{
+  const h=e.target.closest("[data-hide]");
+  if(h){const t=h.dataset.hide; setMeta(t,{oculta:h.checked}); if(h.checked){selCats.delete(t);saveSel()} toast(h.checked?`${t} oculta: solo se podrá jugar con su enlace`:`${t} vuelve a verse en la pantalla principal`); return}
+  const i=e.target.closest("[data-tags]"); if(!i) return;
+  const t=i.dataset.tags; setMeta(t,{etiquetas:parseTags(i.value)}); i.value=tagsOf(t).join(", "); toast(`Etiquetas de ${t} guardadas`);
+});
+$("#aLoginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  if($("#aPin").value===adminCfg.pin){adminIn=true;$("#aPin").value="";$("#aLoginMsg").textContent="";renderAdmin()}
+  else $("#aLoginMsg").textContent="PIN incorrecto.";
+});
+$("#aLogout").addEventListener("click",()=>{adminIn=false;renderAdmin()});
+$("#aFiltro").addEventListener("change",renderAdmin); $("#aBuscar").addEventListener("input",renderAdmin);
+function openForm(p){
+  editId=p?p.id:null; $("#aForm").hidden=false; $("#fWarn").hidden=true;
+  $("#aFormTitle").textContent=p?"Editar pregunta":"Nueva pregunta";
+  $("#fTema").value=p?p.tema:($("#aFiltro").value||""); $("#fLetra").value=p?p.letra:"A"; $("#fTipo").value=p?p.tipo:"empieza";
+  $("#fPreg").value=p?p.pregunta:""; $("#fResp").value=p?p.respuestas:"";
+  $("#aForm").scrollIntoView({behavior:"smooth",block:"center"}); $("#fTema").focus();
+}
+$("#aNew").addEventListener("click",()=>openForm(null));
+$("#aCancel").addEventListener("click",()=>{$("#aForm").hidden=true;editId=null});
+$("#aForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const p={id:editId||uid(),tema:$("#fTema").value.trim(),letra:$("#fLetra").value,tipo:$("#fTipo").value,pregunta:$("#fPreg").value.trim(),respuestas:$("#fResp").value.split("|").map(s=>s.trim()).filter(Boolean).join("|")};
+  if(!p.tema||!p.pregunta||!p.respuestas) return;
+  const w=checkLetter(p);
+  if(w&&$("#fWarn").hidden){$("#fWarn").textContent=w+" Pulsa Guardar otra vez para guardarla igualmente.";$("#fWarn").hidden=false;return}
+  const i=preguntas.findIndex(x=>x.id===p.id); if(i>=0) preguntas[i]=p; else preguntas.push(p);
+  savePreg(); $("#aForm").hidden=true; editId=null; renderAdmin(); toast("Pregunta guardada");
+});
+["fLetra","fTipo","fResp"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#fWarn").hidden=true));
+$("#aBody").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-edit]"), del=e.target.closest("[data-del]");
+  if(ed) openForm(preguntas.find(p=>p.id===ed.dataset.edit));
+  if(del){
+    if(del.dataset.armed!=="1"){del.dataset.armed="1";del.textContent="¿Seguro?";setTimeout(()=>{if(del.isConnected){del.dataset.armed="";del.textContent="Borrar"}},3000);return}
+    preguntas=preguntas.filter(p=>p.id!==del.dataset.del); savePreg(); renderAdmin(); toast("Pregunta borrada");
+  }
+});
+function download(name,text,type){
+  const url=URL.createObjectURL(new Blob([text],{type})); const a=document.createElement("a");
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+$("#aExpJson").addEventListener("click",()=>download("preguntas-enroscados.json",JSON.stringify({version:2,categorias:catMeta,preguntas:preguntas.map(({id,...r})=>r)},null,2),"application/json"));
+$("#aExpCsv").addEventListener("click",()=>download("preguntas-enroscados.csv","﻿tema;letra;tipo;pregunta;respuestas\n"+preguntas.map(p=>[p.tema,p.letra,p.tipo,p.pregunta,p.respuestas].map(x=>String(x).replace(/[;\n]/g,",")).join(";")).join("\n"),"text/csv"));
+function cleanQ(r){
+  const letra=String(r.letra||"").trim().toUpperCase(); if(!LETRAS.includes(letra)) return null;
+  const q={id:uid(),tema:String(r.tema||"General").trim(),letra,tipo:/^c/i.test(r.tipo||"")?"contiene":"empieza",pregunta:String(r.pregunta||"").trim(),respuestas:String(r.respuestas||"").split("|").map(s=>s.trim()).filter(Boolean).join("|")};
+  return q.pregunta&&q.respuestas?q:null;
+}
+$("#aFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f) return; const text=await f.text(); let rows=[];
+  try{
+    if(/\.json$/i.test(f.name)||/^[\[{]/.test(text.trim())){
+      const data=JSON.parse(text);
+      if(Array.isArray(data)) rows=data;
+      else{
+        rows=Array.isArray(data.preguntas)?data.preguntas:[];
+        const cm=data.categorias&&typeof data.categorias==="object"?data.categorias:{};
+        for(const t in cm){ if($("#aImpMode").value==="replace"||!catMeta[t]) catMeta[t]={etiquetas:parseTags((cm[t].etiquetas||[]).join(",")),oculta:!!cm[t].oculta} }
+        saveCats();
+      }
+    }
+    else{
+      const lines=text.replace(/^﻿/,"").split(/\r?\n/).filter(l=>l.trim()); const d=(lines[0].match(/;/g)||[]).length>=4?";":",";
+      rows=lines.filter((l,i)=>!(i===0&&/^tema/i.test(l))).map(l=>{const c=l.split(d);return {tema:c[0],letra:c[1],tipo:c[2],pregunta:c.slice(3,c.length-1).join(d),respuestas:c[c.length-1]}});
+    }
+  }catch(err){toast("No se ha podido leer el archivo");e.target.value="";return}
+  const ok=(Array.isArray(rows)?rows:[]).map(cleanQ).filter(Boolean);
+  if(!ok.length){toast("El archivo no tiene preguntas válidas");e.target.value="";return}
+  preguntas=$("#aImpMode").value==="replace"?ok:preguntas.concat(ok); savePreg(); renderAdmin(); toast(`${ok.length} preguntas importadas`); e.target.value="";
+});
+let seedArm=0;
+$("#aSeed").addEventListener("click",()=>{
+  const b=$("#aSeed");
+  if(!seedArm){b.textContent="Se añadirán los ejemplos. Pulsa otra vez";seedArm=setTimeout(()=>{seedArm=0;b.textContent="Restaurar preguntas de ejemplo"},3000);return}
+  clearTimeout(seedArm); seedArm=0; b.textContent="Restaurar preguntas de ejemplo";
+  preguntas=preguntas.filter(p=>!SEED_TEMAS.includes(p.tema)).concat(seedQuestions()); savePreg(); renderAdmin(); toast("Ejemplos restaurados");
+});
+$("#aPinForm").addEventListener("submit",e=>{e.preventDefault(); const v=$("#aNewPin").value.trim(); if(v.length<4) return; adminCfg.pin=v; save(KEY.a,adminCfg); $("#aNewPin").value=""; toast("PIN actualizado")});
+
+/* ---------- Lista de espera (Google Sheets vía Apps Script) ----------
+   Rellena estos dos datos antes de publicar. Mientras falte alguno, el formulario aparece cerrado. */
+const WAITLIST = {
+  url: "https://script.google.com/macros/s/AKfycbzgJWlJC0mRdO38DfTEykeSOXLCYuyH21fgs6r9bb5GLQFlyxaxzAuuCD15HpCmuaFf/exec",       // URL de la aplicación web de Apps Script (termina en /exec)
+  contacto: "respiraconnosy@gmail.com"   // Email para ejercer los derechos de protección de datos
+};
+const wlReady=()=>/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(WAITLIST.url)&&/@/.test(WAITLIST.contacto);
+function renderWaitlist(){
+  const ok=wlReady();
+  $("#wlClosed").hidden=ok; $("#wlForm").hidden=!ok;
+  $("#wlContacto").textContent=WAITLIST.contacto||"el email de contacto";
+  const done=load("rosco.listaEspera",null);
+  if(done){ $("#wlForm").hidden=true; $("#wlDone").hidden=false; $("#wlDoneMsg").textContent=`Te apuntaste con ${done}. Te escribiremos cuando abramos.` }
+}
+$("#wlForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#wlErr"); err.hidden=true;
+  const d={nombre:$("#wlNombre").value.trim(),apellidos:$("#wlApellidos").value.trim(),email:$("#wlEmail").value.trim(),
+    profesion:$("#wlProf").value,plan:$("#wlPlan").value,uso:$("#wlUso").value.trim(),web:$("#wlWeb").value,
+    consentimiento:$("#wlConsent").checked,textoConsentimiento:$("#wlConsentText").textContent.trim(),origen:location.href.split("#")[0]};
+  const falta=[];
+  if(!d.nombre) falta.push("nombre"); if(!d.apellidos) falta.push("apellidos");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) falta.push("un email válido");
+  if(!d.profesion) falta.push("profesión"); if(!d.plan) falta.push("plan que te interesa"); if(!d.uso) falta.push("para qué usarías la app");
+  if(falta.length){err.textContent="Falta: "+falta.join(", ")+".";err.hidden=false;return}
+  if(!d.consentimiento){err.textContent="Para apuntarte tienes que aceptar el tratamiento de tus datos.";err.hidden=false;return}
+  const b=$("#wlSend"); b.disabled=true; b.textContent="Enviando…";
+  const body=JSON.stringify(d);
+  let res=null;
+  try{ const r=await fetch(WAITLIST.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body}); res=await r.json() }
+  catch(ex){ try{ await fetch(WAITLIST.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body}); res={ok:true} }catch(ex2){ res=null } }
+  b.disabled=false; b.textContent="Unirme a la lista de espera";
+  if(!res||!res.ok){err.textContent="No se ha podido enviar. Revisa tu conexión y vuelve a intentarlo.";err.hidden=false;return}
+  save("rosco.listaEspera",d.email);
+  $("#wlForm").hidden=true; $("#wlDone").hidden=false;
+  $("#wlDoneMsg").textContent=res.duplicate?`Ese email (${d.email}) ya estaba en la lista. No hace falta que hagas nada más.`:`Te escribiremos a ${d.email} cuando abramos.`;
+});
+
+/* ---------- Skins ----------
+   SKIN_POR_DEFECTO es el que ve todo el mundo. Lo que elijas en Administrar se guarda en tu navegador
+   y viaja en los enlaces que compartas. */
+const SKIN_POR_DEFECTO = "azul";
+const SKINS=[
+  {id:"azul",nombre:"Azul noche",bg:"#081634",l:"#1f62e0"},
+  {id:"morado",nombre:"Morado galaxia",bg:"#140a2b",l:"#7b3fe4"},
+  {id:"atardecer",nombre:"Atardecer",bg:"#24100a",l:"#e2661b"},
+  {id:"fucsia",nombre:"Fucsia",bg:"#250a1d",l:"#d6359c"},
+  {id:"oceano",nombre:"Océano",bg:"#05202a",l:"#0f8fb8"},
+  {id:"grafito",nombre:"Grafito",bg:"#111318",l:"#5468ff"},
+  {id:"claro",nombre:"Claro",bg:"#eef2fb",l:"#1f62e0"},
+  {id:"imparables",nombre:"Atletas Imparables",bg:"#ffffff",l:"#17b4ea",ok:"#61ce70"}
+];
+function currentSkin(){const s=load("rosco.skin",null);return SKINS.some(k=>k.id===s)?s:SKIN_POR_DEFECTO}
+function applySkin(id){
+  if(id==="azul") delete document.documentElement.dataset.skin; else document.documentElement.dataset.skin=id;
+  PAL=null;
+}
+function renderSkins(){
+  const cur=document.documentElement.dataset.skin||"azul";
+  $("#skinList").innerHTML=SKINS.map(k=>`<button type="button" class="skin" role="radio" aria-checked="${k.id===cur}" data-skin="${k.id}"><span class="sw" style="background:${k.bg}"><i style="background:${k.l}">A</i><i style="background:${k.l}">B</i><i style="background:${k.ok||"#16a85a"}">C</i><i style="background:#dd3b35">D</i></span><b>${k.nombre}</b></button>`).join("");
+  $("#skinNote").textContent=currentSkin()===SKIN_POR_DEFECTO?"Este es el aspecto que ven todos los jugadores.":`Lo ves tú en este navegador y lo llevarán los enlaces que compartas desde ahora. El resto de jugadores sigue viendo "${SKINS.find(k=>k.id===SKIN_POR_DEFECTO).nombre}".`;
+}
+$("#skinList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-skin]"); if(!b) return;
+  save("rosco.skin",b.dataset.skin); applySkin(b.dataset.skin); renderSkins(); toast(`Skin: ${SKINS.find(k=>k.id===b.dataset.skin).nombre}`);
+});
+applySkin(currentSkin());
+
+if(!load(KEY.q,null)) savePreg();
+$("#sharedExit").addEventListener("click",()=>{shared=null;history.replaceState(null,"",location.pathname+location.search);fillSetup()});
+window.addEventListener("hashchange",async()=>{ if(game&&game.running) return; await readShared(); if(!$("#v-setup").hidden) fillSetup() });
+readShared().then(()=>show("setup"));
+</script>
+</body>
+</html>
