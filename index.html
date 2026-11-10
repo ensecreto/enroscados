@@ -1,0 +1,1736 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Enroscados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* Plató de TV: azul noche, rosco de letras alrededor de la cámara, panel de pregunta debajo */
+:root{
+  --night:#081634; --panel:#102654; --panel2:#17336d; --line:#2a4a8f;
+  --blue:#1f62e0; --green:#16a85a; --red:#dd3b35; --gold:#ffc72e; --grey:#3b4a6b;
+  --ink:#eef3ff; --muted:#a3b3d9;
+  --glow:#11307a; --cam1:#173a86; --cam2:#0b1f4d; --okText:#8ff0b8; --koText:#ffaba7; --goldText:#ffc72e; --listen:#0e3d26;
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+/* Skins: cambian el fondo y el color de las letras del rosco. Verde y rojo se reservan para acierto y fallo. */
+:root[data-skin="morado"]{--night:#140a2b;--panel:#221345;--panel2:#2f1c5c;--line:#4b3388;--blue:#7b3fe4;--glow:#3b1a7a;--cam1:#4a2496;--cam2:#1d0f3d;--muted:#b9a8de}
+:root[data-skin="atardecer"]{--night:#24100a;--panel:#3a1a10;--panel2:#4f2516;--line:#7a3d24;--blue:#e2661b;--glow:#6b2a10;--cam1:#7a3417;--cam2:#2f130a;--muted:#dcb39c}
+:root[data-skin="fucsia"]{--night:#250a1d;--panel:#3a102e;--panel2:#50173f;--line:#7d2662;--blue:#d6359c;--glow:#5f1549;--cam1:#7a1d5c;--cam2:#2e0b23;--muted:#e0a9cc}
+:root[data-skin="oceano"]{--night:#05202a;--panel:#0b3240;--panel2:#114254;--line:#1f6178;--blue:#0f8fb8;--glow:#0d4c63;--cam1:#13627e;--cam2:#062633;--muted:#9fc9d8}
+:root[data-skin="grafito"]{--night:#111318;--panel:#1b1e25;--panel2:#262a33;--line:#3b414d;--blue:#5468ff;--glow:#2a2f3a;--cam1:#30353f;--cam2:#15181d;--muted:#a9b0bf}
+:root[data-skin="imparables"]{--night:#ffffff;--panel:#ffffff;--panel2:#eaf8fd;--line:#c6e8f4;--blue:#17b4ea;--green:#61ce70;--ink:#10324a;--muted:#5a7487;--glow:#eaf8fd;--cam1:#17b4ea;--cam2:#0b6f93;--okText:#2c8a3a;--koText:#b42318;--goldText:#8a5a00;--listen:#e3f7e6;--grey:#b8c7d2;color-scheme:light}
+:root[data-skin="claro"]{--night:#eef2fb;--panel:#ffffff;--panel2:#e4eaf7;--line:#c3cde4;--blue:#1f62e0;--ink:#13204a;--muted:#55618a;--glow:#dce5fa;--cam1:#2a5bc4;--cam2:#173a86;--okText:#0e7a3e;--koText:#b42318;--goldText:#8a5a00;--listen:#d6f5e3;--grey:#9aa6c2;color-scheme:light}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(120% 80% at 50% 0%, var(--glow) 0%, var(--night) 60%) fixed, var(--night);color:var(--ink);font:16px/1.5 var(--body);min-height:100vh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance}
+.wrap{max-width:980px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:.01em}
+.brand i{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--blue) 0 60%,var(--green) 0 80%,var(--red) 0 92%,var(--gold) 0);display:inline-block}
+nav{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);padding:4px;border-radius:999px;border:1px solid var(--line)}
+nav button{border:0;background:transparent;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:700}
+nav button[aria-current="true"]{background:var(--blue);color:#fff}
+nav button:disabled{opacity:.4;cursor:not-allowed}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-weight:700;margin-bottom:6px;font-size:.92rem}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+input[type=text],input[type=search],input[type=email],input[type=number],input[type=password],select,textarea{width:100%;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg label{margin:0;padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--muted)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+span{color:#fff}
+.seg label:has(input:checked){background:var(--panel2);color:#fff}
+.check{display:flex;gap:10px;align-items:center;font-weight:700;margin:0 0 10px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--blue)}
+.btn{border:0;border-radius:12px;padding:11px 18px;font-weight:700;cursor:pointer;background:var(--panel2);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.12)}
+.btn:focus-visible,nav button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.big{font-size:1.15rem;padding:14px 26px;font-family:var(--display)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1300}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.small{padding:6px 10px;font-size:.85rem;border-radius:8px}
+.note{color:var(--muted);font-size:.9rem}
+.warn{background:#3a2a07;border:1px solid #7a5a12;color:#ffe6a6;border-radius:12px;padding:10px 12px;font-size:.9rem;margin-bottom:12px}
+.ok{color:var(--okText)}
+.prev{width:180px;max-width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--night);border:3px solid var(--line);display:grid;place-items:center;margin:0 auto 12px}
+.prev video,.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+[hidden]{display:none!important}
+
+/* JUEGO */
+.hud{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:center}
+.pill.okc{color:var(--okText)}.pill.koc{color:var(--koText)}
+.pill.time{font-family:var(--display);font-size:1.15rem;color:var(--goldText)}
+.pill.status.listen{background:var(--listen);border-color:var(--green)}
+.pill.status.listen::before{content:"";width:9px;height:9px;border-radius:50%;background:#41e28a;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.stage{position:relative;width:min(100%,560px);aspect-ratio:1;margin:0 auto}
+.cam{position:absolute;inset:17%;border-radius:50%;overflow:hidden;background:radial-gradient(circle,var(--cam1),var(--cam2));border:4px solid var(--line);display:grid;place-items:center}
+.cam video{position:absolute;inset:0}
+.bigLetter{font-family:var(--display);font-weight:800;font-size:clamp(4rem,18vw,9rem);color:var(--gold);text-shadow:0 4px 0 #0006;position:relative}
+.cam.hasvideo .bigLetter{position:absolute;bottom:6%;font-size:clamp(2rem,8vw,3.6rem)}
+.rec{position:absolute;top:4%;right:4%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem;padding:4px 10px;border-radius:999px;display:flex;gap:6px;align-items:center}
+.rec::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+.L{position:absolute;width:8.6%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(.8rem,2.8vw,1.35rem);background:var(--blue);color:#fff;border:2px solid #ffffff55;box-shadow:0 3px 0 #0005;transition:background .25s,transform .25s}
+.L.acierto{background:var(--green)}
+.L.fallo{background:var(--red)}
+.L.vacio{background:var(--grey);color:#ffffff66}
+.L.cur{transform:translate(-50%,-50%) scale(1.28);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 3px 0 #0005;z-index:2}
+.qcard{max-width:720px;margin:16px auto 0;text-align:center}
+.qlabel{font-family:var(--display);color:var(--goldText);font-size:1.1rem;letter-spacing:.04em;text-transform:uppercase}
+.qtext{font-size:clamp(1.15rem,3.4vw,1.55rem);font-weight:700;margin:6px 0 10px}
+.heard{color:var(--muted);min-height:1.5em;font-style:italic}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.typed{display:flex;gap:8px;max-width:520px;margin:12px auto 0}
+.typed input{flex:1;min-width:0}
+.ref{margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ref span{align-self:center;color:var(--muted);font-size:.85rem}
+
+/* RESULTADOS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--night);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:2rem;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.85rem}
+.resvideo video{width:100%;max-width:420px;border-radius:14px;display:block;margin:0 auto 10px;background:#000}
+.fails{margin:0;padding-left:20px}
+.fails li{margin-bottom:4px}
+
+/* TABLAS */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--panel2);font-weight:700;white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums;text-align:right}
+tr:last-child td{border-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 14px}
+.chip{min-width:34px;text-align:center;padding:4px 6px;border-radius:8px;background:var(--panel2);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.chip small{display:block;font-weight:400;color:var(--muted);font-size:.7rem}
+.chip.zero{background:#4a1714;color:#ffb3ae}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.toolbar .field{margin:0;min-width:160px;flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;max-width:min(92vw,520px);z-index:50;font-weight:700;text-align:center}
+.catbox{display:flex;flex-direction:column;gap:10px;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tagbar{display:flex;flex-wrap:wrap;gap:6px}
+.tagbtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700;cursor:pointer}
+.tagbtn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a1300}
+.catlist{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.cat{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin:0;padding:8px;border-radius:8px;cursor:pointer;font-weight:400}
+.cat:hover{background:var(--panel)}
+.cat input{width:20px;height:20px;accent-color:var(--blue);flex:none;margin-top:2px}
+.catname{font-weight:700;flex:1;min-width:0}
+.catname small{color:var(--muted);font-weight:400}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tagchip{background:var(--panel2);color:var(--muted);border-radius:999px;padding:1px 8px;font-size:.75rem}
+.group{border-top:1px solid var(--line);padding-top:6px;margin-top:4px}
+.group:first-child{border-top:0;margin-top:0;padding-top:0}
+.grouphead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 8px;color:var(--goldText)}
+.sharebox{margin-top:14px;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px}
+.sharedBanner{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;background:var(--night);border:2px solid var(--gold);border-radius:12px;padding:12px;margin-bottom:14px}
+.sharedBanner b{flex:1;min-width:0;font-family:var(--display);font-size:1.15rem}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hidechk{width:20px;height:20px;accent-color:var(--blue)}
+.navcta{color:var(--goldText)!important}
+nav button.navcta[aria-current="true"]{background:var(--gold);color:#1a1300!important}
+.ctaCard{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:20px;border-color:var(--gold)}
+.ctaCard>div{flex:1;min-width:220px}
+.wlHero{margin-bottom:20px}
+.wlTitle{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;margin:4px 0 8px}
+.wlLead{font-size:1.1rem;max-width:62ch;margin:0 0 10px}
+.wlList{margin:0;padding-left:20px;display:grid;gap:4px}
+.wlH3{margin:0 0 12px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+@media (max-width:820px){.plans{grid-template-columns:1fr}}
+.plan h3{margin-bottom:6px}
+.plan.featured{border:2px solid var(--gold)}
+.price{font-family:var(--display);font-weight:800;font-size:1.8rem;margin:0;font-variant-numeric:tabular-nums}
+.price small{font-size:.95rem;color:var(--muted);font-weight:600}
+.price.alt{font-size:1.25rem}
+.badge{display:inline-block;background:var(--green);color:#fff;font-family:var(--body);font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;vertical-align:middle}
+.tiers{margin:8px 0}
+.tiers td{padding:5px 0;border-bottom:1px solid var(--line)}
+.tiers td.n{font-weight:700;text-align:right}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.privacy{background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:4px 0 12px;font-size:.88rem}
+.privacy summary{cursor:pointer;font-weight:700}
+.privacy p{margin:8px 0 0;color:var(--muted)}
+.consent{font-weight:400;align-items:flex-start}
+.consent input{flex:none;margin-top:3px}
+.skins{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.skin{display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--night);border:2px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;text-align:left}
+.skin[aria-checked="true"]{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.skin b{font-size:.92rem}
+.sw{display:flex;gap:4px;align-items:center;width:100%;border-radius:8px;padding:8px}
+.sw i{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-style:normal;font-family:var(--display);font-weight:800;font-size:.7rem;color:#fff;border:1px solid #ffffff55}
+.compat{text-align:left}
+.compatT{font-size:.82rem}
+.compatT th,.compatT td{padding:6px 8px}
+.dupCard{margin-bottom:16px;border:2px solid var(--gold)}
+.dupCount{color:var(--goldText)}
+.dupList{display:grid;gap:12px}
+.dupItem{background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px}
+.dupHead{font-size:.95rem}
+.dupWhy{display:inline-block;margin-left:6px;background:var(--panel2);color:var(--goldText);border-radius:999px;padding:1px 10px;font-size:.78rem;font-weight:700}
+.dupCols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.dupCols{grid-template-columns:1fr}}
+.dupCols>div{min-width:0;border-left:3px solid var(--line);padding-left:10px}
+.dupLbl{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+.dupQ{margin:4px 0 2px}
+.dupA{margin:0;color:var(--muted);font-size:.9rem}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><i></i>Enroscados</div>
+  <nav id="nav">
+    <button data-view="setup" aria-current="true">Jugar</button>
+    <button data-view="scores">Puntuaciones</button>
+    <button data-view="admin">Administrar</button>
+    <button data-view="waitlist" class="navcta">Crea tus roscos</button>
+  </nav>
+</header>
+
+<!-- CONFIGURAR PARTIDA -->
+<section id="v-setup">
+  <div class="grid2">
+    <div class="card">
+      <h2 style="margin-bottom:14px">Nueva partida</h2>
+      <div id="envWarn"></div>
+      <div class="field"><label for="pName">Jugador</label><input type="text" id="pName" placeholder="Tu nombre" maxlength="40"></div>
+      <div class="sharedBanner" id="sharedBox" hidden>
+        <span class="qlabel" style="font-size:.85rem">Rosco compartido</span>
+        <b id="sharedName"></b>
+        <button class="btn small" type="button" id="sharedExit">Elegir otras categorías</button>
+      </div>
+      <div class="field" id="catField"><label for="catSearch">Categorías</label>
+        <div class="catbox">
+          <input type="search" id="catSearch" placeholder="Buscar por nombre o etiqueta" autocomplete="off">
+          <div class="tagbar" id="tagBar" aria-label="Filtrar por etiqueta"></div>
+          <div class="row" style="justify-content:space-between">
+            <label class="check" style="margin:0"><input type="checkbox" id="catAll"> Todas</label>
+            <label class="check" style="margin:0"><input type="checkbox" id="catGroup"> Agrupar por etiqueta</label>
+          </div>
+          <div class="catlist" id="catList"></div>
+          <p class="note" id="catSum" style="margin:0"></p>
+        </div>
+      </div>
+      <div class="field"><label>Modo</label>
+        <div class="row">
+          <div class="seg">
+            <label><input type="radio" name="pModo" value="libre" id="pModoLibre" checked><span>Sin tiempo</span></label>
+            <label><input type="radio" name="pModo" value="tiempo" id="pModoTiempo"><span>Con tiempo</span></label>
+          </div>
+          <div class="row" id="segBox" hidden><input type="number" id="pSegs" min="30" max="900" step="10" value="180" style="width:100px"> <span class="note">segundos</span></div>
+        </div>
+        <span class="note">El reloj solo corre mientras te toca responder, no mientras la voz lee.</span>
+      </div>
+      <label class="check"><input type="checkbox" id="pCam" checked> Verme en cámara</label>
+      <label class="check"><input type="checkbox" id="pRec"> Grabar la partida para descargarla</label>
+      <p class="note" style="margin-top:-4px">Para que la voz en off se oiga en el vídeo: altavoces a buen volumen y sin auriculares.</p>
+      <p class="warn" id="androidRecNote" hidden>En Android el micrófono no puede grabar y reconocer la voz a la vez. Si grabas, responde escribiendo o con los botones de árbitro. Si solo quieres verte en cámara, deja "Grabar" sin marcar y la voz funcionará.</p>
+      <div class="row" style="margin-top:16px">
+        <button class="btn big primary" id="btnStart">Empezar rosco</button>
+      </div>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3 style="margin-bottom:12px">Cámara y micrófono</h3>
+      <div class="prev"><video id="prevVideo" autoplay muted playsinline></video></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="btnPerm">Activar cámara y micrófono</button><button class="btn" id="btnMicTest">Probar reconocimiento de voz</button></div>
+      <p class="note" id="micTest" aria-live="polite" style="min-height:1.5em;font-weight:700"></p>
+      <p class="note" id="permStatus">El navegador te pedirá permiso. Nada sale de este dispositivo: el vídeo se queda en tu equipo hasta que tú lo descargues.</p>
+      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+      <h3 style="margin-bottom:8px">Cómo se juega</h3>
+      <p class="note" style="text-align:left;margin:0 0 12px">La voz lee cada letra y su pregunta. Di la respuesta en voz alta. Di <b>"pasapalabra"</b> para saltar; volverá al final de la vuelta. Si el micro no te entiende, puedes escribir o usar los botones de árbitro.</p>
+      <details class="privacy compat">
+        <summary>¿En qué dispositivos funciona?</summary>
+        <div class="tablebox" style="margin-top:8px"><table class="compatT">
+          <thead><tr><th>Dispositivo y navegador</th><th>Voz en off</th><th>Responder hablando</th><th>Cámara y vídeo</th></tr></thead>
+          <tbody>
+            <tr><td><b>Ordenador · Chrome</b></td><td>Sí</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td><b>Ordenador · Edge</b></td><td>Sí</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td><b>Android · Chrome</b></td><td>Sí</td><td>Sí, pero no mientras grabas</td><td>Sí</td></tr>
+            <tr><td><b>iPhone / iPad</b> (Safari o Chrome)</td><td>Sí, con otra voz</td><td>A veces falla. Requiere activar el Dictado</td><td>Sí</td></tr>
+            <tr><td><b>Mac · Safari</b></td><td>Sí, con otra voz</td><td>A veces falla</td><td>Sí</td></tr>
+            <tr><td><b>Brave</b></td><td>Sí</td><td>No</td><td>Sí</td></tr>
+            <tr><td><b>Firefox</b></td><td>Sí</td><td>No</td><td>Sí</td></tr>
+          </tbody></table></div>
+        <p style="margin:8px 0 0">Recomendado: <b>Chrome</b> en ordenador o Android. Necesitas conexión a internet para responder hablando. Donde no se pueda responder hablando, se juega escribiendo o con los botones de árbitro.</p>
+      </details>
+    </div>
+  </div>
+  <div class="card ctaCard">
+    <div><h3>¿Quieres crear tus propios roscos?</h3><p class="note" style="margin:4px 0 0">Para tus clases, tu comunidad o tu marca. Apúntate a la lista de espera y conoce los precios de lanzamiento.</p></div>
+    <button class="btn gold" type="button" data-go="waitlist">Unirme a la lista de espera</button>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="v-game" hidden>
+  <div class="hud">
+    <span class="pill" id="gWho"></span>
+    <span class="pill okc">✓ <span id="gOk">0</span></span>
+    <span class="pill koc">✗ <span id="gKo">0</span></span>
+    <span class="pill time" id="gTime">00:00</span>
+    <span class="pill status" id="gStatus">Preparado</span>
+  </div>
+  <div class="stage" id="stage">
+    <div class="cam" id="cam"><video id="camVideo" autoplay muted playsinline></video><div class="bigLetter" id="bigLetter">A</div></div>
+    <div class="rec" id="recBadge" hidden>REC</div>
+  </div>
+  <div class="qcard card">
+    <div class="qlabel" id="qLabel"></div>
+    <div class="qtext" id="qText"></div>
+    <div class="heard" id="heard"></div>
+    <div class="controls">
+      <button class="btn gold" id="btnPass">Pasapalabra</button>
+      <button class="btn" id="btnRepeat">Repetir pregunta</button>
+      <button class="btn" id="btnUndo" hidden>Era correcta: corregir</button>
+      <button class="btn red" id="btnStop">Plantarse</button>
+    </div>
+    <form class="typed" id="typedForm" autocomplete="off">
+      <input type="text" id="typed" placeholder="O escribe tu respuesta">
+      <button class="btn primary" type="submit">Responder</button>
+    </form>
+    <div class="ref"><span>Modo árbitro:</span><button class="btn small green" id="btnOk">Marcar acierto</button><button class="btn small red" id="btnKo">Marcar fallo</button></div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section id="v-result" hidden>
+  <div class="card">
+    <h2 id="rTitle">Fin del rosco</h2>
+    <p class="note" id="rSub"></p>
+    <div class="stats">
+      <div class="stat"><b id="rOk">0</b><span>Aciertos</span></div>
+      <div class="stat"><b id="rKo">0</b><span>Fallos</span></div>
+      <div class="stat"><b id="rPend">0</b><span>Sin responder</span></div>
+      <div class="stat"><b id="rTime">0:00</b><span>Tiempo</span></div>
+    </div>
+    <div class="resvideo" id="rVideoBox" hidden>
+      <h3 style="margin-bottom:10px">Tu vídeo</h3>
+      <p class="note" id="rVideoMsg">Preparando el vídeo…</p>
+      <video id="rVideo" controls playsinline hidden></video>
+      <div class="row" style="justify-content:center"><a class="btn green" id="rDownload" hidden>Descargar vídeo</a></div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn primary big" id="btnAgain">Jugar otra vez</button>
+      <button class="btn" data-go="scores">Ver puntuaciones</button>
+    </div>
+  </div>
+</section>
+
+<!-- LISTA DE ESPERA -->
+<section id="v-waitlist" hidden>
+  <div class="card wlHero">
+    <span class="qlabel" style="font-size:.85rem">Próximamente</span>
+    <h2 class="wlTitle">Crea tus propios roscos</h2>
+    <p class="wlLead">Escribe tus preguntas, compártelas con un enlace y deja que tus alumnos o tu comunidad jueguen con voz, cámara y marcador.</p>
+    <ul class="wlList">
+      <li>Roscos ilimitados con tus propias preguntas</li>
+      <li>Un enlace para cada rosco y una página propia con todos los tuyos</li>
+      <li>Puedes pedir que un rosco sea público para que lo juegue todo el mundo</li>
+      <li>Voz en off, reconocimiento de voz y grabación de la partida</li>
+    </ul>
+  </div>
+
+  <h3 class="wlH3">Precios de lanzamiento <span class="note">(IVA incluido)</span></h3>
+  <div class="plans">
+    <div class="card plan">
+      <h3>Creador</h3>
+      <p class="price">5 €<small>/mes</small></p>
+      <p class="price alt">o 40 €<small>/año</small> <span class="badge">ahorras 20 €</span></p>
+      <p class="note">7 días de prueba gratis. Se pide la tarjeta al empezar la prueba; si cancelas antes de que acabe, no se cobra nada.</p>
+    </div>
+    <div class="card plan featured">
+      <h3>Fundador</h3>
+      <p class="price">Pago único</p>
+      <table class="tiers"><tbody>
+        <tr><td>Plazas 1 a 20</td><td class="n">197 €</td></tr>
+        <tr><td>Plazas 21 a 40</td><td class="n">247 €</td></tr>
+        <tr><td>Plazas 41 a 60</td><td class="n">299 €</td></tr>
+      </tbody></table>
+      <p class="note">Solo 60 plazas en total. Acceso al plan Creador mientras la app esté en servicio, sin cuotas. Se cobra el día del lanzamiento, por orden de compra. Apuntarte a la lista no te obliga a pagar.</p>
+    </div>
+    <div class="card plan">
+      <h3>Centros educativos</h3>
+      <p class="price">desde 120 €<small>/año</small></p>
+      <table class="tiers"><tbody>
+        <tr><td>Hasta 10 docentes</td><td class="n">120 €</td></tr>
+        <tr><td>Hasta 20 docentes</td><td class="n">200 €</td></tr>
+        <tr><td>Hasta 35 docentes</td><td class="n">300 €</td></tr>
+        <tr><td>Hasta 50 docentes</td><td class="n">400 €</td></tr>
+      </tbody></table>
+      <p class="note">Cuentas separadas para cada docente y factura a nombre del centro.</p>
+    </div>
+  </div>
+
+  <div class="card wlFormCard" id="wlBox">
+    <h3 style="margin-bottom:6px">Únete a la lista de espera</h3>
+    <p class="note" style="margin-top:0">Te avisaremos por email cuando abramos, antes que a nadie.</p>
+    <p class="warn" id="wlClosed" hidden>La lista de espera abrirá muy pronto.</p>
+    <form id="wlForm" autocomplete="on" novalidate>
+      <div class="grid2" style="gap:12px">
+        <div class="field"><label for="wlNombre">Nombre</label><input type="text" id="wlNombre" name="given-name" autocomplete="given-name" required maxlength="80"></div>
+        <div class="field"><label for="wlApellidos">Apellidos</label><input type="text" id="wlApellidos" name="family-name" autocomplete="family-name" required maxlength="120"></div>
+      </div>
+      <div class="field"><label for="wlEmail">Email</label><input type="email" id="wlEmail" name="email" autocomplete="email" required maxlength="160"></div>
+      <div class="grid2" style="gap:12px">
+        <div class="field"><label for="wlProf">Profesión</label>
+          <select id="wlProf" required>
+            <option value="">Elige una opción</option>
+            <option>Docente de Infantil o Primaria</option>
+            <option>Docente de Secundaria, Bachillerato o FP</option>
+            <option>Docente universitario</option>
+            <option>Equipo directivo de un centro educativo</option>
+            <option>Formador/a, coach o monitor/a</option>
+            <option>Empresa o comunidad online</option>
+            <option>Familia</option>
+            <option>Otra</option>
+          </select></div>
+        <div class="field"><label for="wlPlan">¿Qué plan te interesa?</label>
+          <select id="wlPlan" required>
+            <option value="">Elige una opción</option>
+            <option>Creador mensual (5 €/mes)</option>
+            <option>Creador anual (40 €/año)</option>
+            <option>Fundador (pago único)</option>
+            <option>Centro educativo</option>
+            <option>Aún no lo sé</option>
+          </select></div>
+      </div>
+      <div class="field"><label for="wlUso">¿Para qué usarías la app?</label><textarea id="wlUso" required maxlength="1000" placeholder="Por ejemplo: repasar el temario de Ciencias con mi clase de 5.º, retos para mi comunidad…"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="wlWeb">No rellenes este campo</label><input type="text" id="wlWeb" tabindex="-1" autocomplete="off"></div>
+      <details class="privacy">
+        <summary>Información sobre protección de datos</summary>
+        <p><b>Responsable:</b> María Dolores González Gallardo.<br>
+        <b>Finalidad:</b> gestionar tu inscripción en la lista de espera de Enroscados y avisarte por email del lanzamiento y sus condiciones.<br>
+        <b>Legitimación:</b> tu consentimiento, que puedes retirar en cualquier momento.<br>
+        <b>Destinatarios:</b> no se ceden datos a terceros. Se guardan en Google Sheets; Google actúa como encargado del tratamiento.<br>
+        <b>Conservación:</b> hasta el lanzamiento y como máximo 12 meses, o hasta que pidas la baja.<br>
+        <b>Derechos:</b> acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <span id="wlContacto"></span>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+      </details>
+      <label class="check consent"><input type="checkbox" id="wlConsent" required> <span id="wlConsentText">He leído la información sobre protección de datos y acepto que se traten mis datos para gestionar la lista de espera y recibir el aviso de lanzamiento.</span></label>
+      <p class="warn" id="wlErr" hidden></p>
+      <button class="btn big primary" type="submit" id="wlSend">Unirme a la lista de espera</button>
+    </form>
+    <div id="wlDone" hidden>
+      <h3 style="color:var(--okText)">¡Ya estás en la lista!</h3>
+      <p class="note" id="wlDoneMsg">Te escribiremos al email que nos has dado cuando abramos.</p>
+      <button class="btn small" type="button" id="wlAgain">Apuntar otro email</button>
+    </div>
+  </div>
+</section>
+
+<!-- PUNTUACIONES -->
+<section id="v-scores" hidden>
+  <div class="card">
+    <div class="section-title"><h2>Puntuaciones</h2></div>
+    <div class="toolbar">
+      <div class="field"><label for="sTema">Temática</label><select id="sTema"></select></div>
+      <div class="field"><label for="sJug">Jugador</label><input type="text" id="sJug" placeholder="Filtrar por nombre"></div>
+    </div>
+    <div class="stats" id="sSum"></div>
+    <div class="tablebox"><table><thead><tr><th>Fecha</th><th>Jugador</th><th>Temática</th><th>✓</th><th>✗</th><th>Pend.</th><th>Tiempo</th><th>Modo</th></tr></thead><tbody id="sBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="v-admin" hidden>
+  <div class="card" id="aLogin" style="max-width:420px;margin:0 auto">
+    <h2 style="margin-bottom:12px">Zona de administración</h2>
+    <form id="aLoginForm" autocomplete="off">
+      <div class="field"><label for="aPin">PIN</label><input type="password" id="aPin" inputmode="numeric" placeholder="PIN inicial: 1234"></div>
+      <button class="btn primary" type="submit">Entrar</button>
+      <p class="note" id="aLoginMsg"></p>
+    </form>
+  </div>
+  <div id="aPanel" hidden>
+    <div class="card dupCard" id="dupCard" hidden>
+      <div class="section-title"><h2>Revisar preguntas repetidas <span class="dupCount" id="dupCount"></span></h2>
+        <div class="row"><button class="btn small" type="button" id="dupAllKeep">Importar todas igualmente</button><button class="btn small" type="button" id="dupAllDrop">Descartar todas</button></div></div>
+      <p class="note" style="margin-top:0">Estas preguntas del último archivo se parecen a otras que ya tienes, así que no se han importado. Decide qué hacer con cada una.</p>
+      <div id="dupList" class="dupList"></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Preguntas</h2><div class="row"><button class="btn primary" id="aNew">Nueva pregunta</button><button class="btn small" id="aLogout">Salir</button></div></div>
+      <div class="toolbar">
+        <div class="field"><label for="aFiltro">Temática</label><select id="aFiltro"></select></div>
+        <div class="field"><label for="aBuscar">Buscar</label><input type="text" id="aBuscar" placeholder="Pregunta o respuesta"></div>
+      </div>
+      <label>Cobertura de letras <span class="note">(preguntas por letra; en rojo, letras que no saldrán)</span></label>
+      <div class="chips" id="aCob"></div>
+
+      <form class="card" id="aForm" hidden style="background:var(--night);margin-bottom:14px" autocomplete="off">
+        <h3 id="aFormTitle" style="margin-bottom:12px">Nueva pregunta</h3>
+        <div class="grid2" style="gap:12px">
+          <div class="field"><label for="fTema">Temática</label><input type="text" id="fTema" list="temasList" required></div>
+          <div class="row" style="align-items:end">
+            <div class="field" style="flex:1"><label for="fLetra">Letra</label><select id="fLetra"></select></div>
+            <div class="field" style="flex:2"><label for="fTipo">Tipo</label><select id="fTipo"><option value="empieza">Empieza por</option><option value="contiene">Contiene la</option></select></div>
+          </div>
+        </div>
+        <div class="field"><label for="fPreg">Pregunta (definición)</label><textarea id="fPreg" required></textarea></div>
+        <div class="field"><label for="fResp">Respuestas válidas</label><input type="text" id="fResp" required placeholder="corazón | corazon"><span class="note">Separa con | las variantes que aceptes (con y sin tilde, singular y plural…).</span></div>
+        <p class="warn" id="fWarn" hidden></p>
+        <div class="row"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" id="aCancel">Cancelar</button></div>
+      </form>
+      <datalist id="temasList"></datalist>
+
+      <div class="tablebox"><table><thead><tr><th>Letra</th><th>Temática</th><th>Pregunta</th><th>Respuestas</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div>
+      <p class="note" id="aCount"></p>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Categorías y etiquetas</h2></div>
+      <p class="note" style="margin-top:0">Escribe las etiquetas separadas por comas. Sirven para filtrar y agrupar categorías al preparar una partida. Se guardan al salir del campo. Marca <b>Oculta</b> para que una categoría no aparezca en la pantalla principal: solo se podrá jugar con su enlace.</p>
+      <div class="field" style="max-width:360px"><label for="aCatSearch">Buscar categoría</label><input type="search" id="aCatSearch" placeholder="Nombre o etiqueta" autocomplete="off"></div>
+      <div class="tablebox"><table><thead><tr><th>Categoría</th><th>Preguntas</th><th>Etiquetas</th><th>Oculta</th><th>Enlace</th></tr></thead><tbody id="aCatBody"></tbody></table></div>
+      <div class="sharebox" id="shareBox" hidden>
+        <label for="shareUrl" id="shareLabel">Enlace directo</label>
+        <div class="row"><input type="text" id="shareUrl" readonly style="flex:1;min-width:0"><button class="btn primary" type="button" id="shareCopy">Copiar</button></div>
+        <p class="note" id="shareNote" style="margin:6px 0 0"></p>
+      </div>
+      <datalist id="tagsList"></datalist>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title"><h2>Apariencia</h2></div>
+      <p class="note" style="margin-top:0">Elige los colores del fondo y de las letras del rosco. Verde y rojo se mantienen siempre para aciertos y fallos.</p>
+      <div class="skins" id="skinList" role="radiogroup" aria-label="Skin de la app"></div>
+      <p class="note" id="skinNote" style="margin-bottom:0"></p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:10px">Importar y exportar</h3>
+        <p class="note">CSV con columnas separadas por punto y coma: <code>tema;letra;tipo;pregunta;respuestas</code> (tipo: empieza o contiene). Se puede preparar en Excel.</p>
+        <div class="field"><label for="aImpMode">Al importar</label><select id="aImpMode"><option value="add">Añadir a las existentes</option><option value="replace">Reemplazar todas</option></select></div>
+        <div class="row">
+          <label class="btn" for="aFile" style="margin:0">Importar JSON o CSV</label><input type="file" id="aFile" accept=".json,.csv,.txt" hidden>
+          <button class="btn" id="aExpJson">Exportar JSON</button>
+          <button class="btn" id="aExpCsv">Exportar CSV</button>
+        </div>
+        <p class="note" style="margin-top:12px">Las preguntas se guardan en este navegador. Para pasarlas a otro equipo, exporta aquí e importa allí.</p>
+        <button class="btn small" id="aSeed">Restaurar preguntas de ejemplo</button>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:10px">Borrar historial de partidas</h3>
+        <div class="field"><label for="hMode">Qué borrar</label>
+          <select id="hMode"><option value="zero">Solo las partidas con 0 aciertos</option><option value="cat">Las partidas de una categoría</option><option value="all">Todo el historial</option></select></div>
+        <div class="field" id="hCatBox" hidden><label for="hCat">Categoría</label><select id="hCat"></select></div>
+        <p class="note" id="hCount"></p>
+        <button class="btn red" type="button" id="hDelete">Borrar</button>
+        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+        <h3 style="margin-bottom:10px">Cambiar PIN</h3>
+        <form id="aPinForm" autocomplete="off">
+          <div class="field"><label for="aNewPin">Nuevo PIN</label><input type="password" id="aNewPin" minlength="4" required></div>
+          <button class="btn" type="submit">Guardar PIN</button>
+        </form>
+        <p class="note">El PIN evita que los jugadores entren por despiste. No es una protección fuerte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const LETRAS = [..."ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"];
+const NOMBRE_LETRA = {A:"a",B:"be",C:"ce",D:"de",E:"e",F:"efe",G:"ge",H:"hache",I:"i",J:"jota",K:"ka",L:"ele",M:"eme",N:"ene","Ñ":"eñe",O:"o",P:"pe",Q:"cu",R:"erre",S:"ese",T:"te",U:"u",V:"uve",W:"uve doble",X:"equis",Y:"i griega",Z:"zeta"};
+const KEY = {q:"rosco.preguntas.v1", s:"rosco.puntuaciones.v1", a:"rosco.admin.v1"};
+const KEY_CAT = "rosco.categorias.v1";
+const SEED_TAGS = {"Deporte":["Educación Física","Primaria"],"Cuerpo humano":["Ciencias","Salud","Primaria"],"Respiración":["Salud","Oxygen Advantage"],"Mundial 2026":["Deporte","Actualidad"],"Paula y las habitaciones mágicas":["Infantil","Lectura"],"Imperio Agéntico":["IA","Comunidades"]};
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast("No se ha podido guardar en este navegador")}}
+function uid(){return Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+let toastT=0;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3500)}
+
+/* ---------- Preguntas de ejemplo ---------- */
+const SEED = [
+ ["Deporte", "A", "e", "Conjunto de disciplinas deportivas que incluye carreras, saltos y lanzamientos.", "atletismo"],
+ ["Deporte", "B", "e", "Deporte de equipo en el que hay que meter el balón en una canasta.", "baloncesto|basket|básquet|basquet"],
+ ["Deporte", "C", "e", "Deporte que se practica sobre una bicicleta.", "ciclismo"],
+ ["Deporte", "D", "e", "Prueba de atletismo formada por diez pruebas distintas.", "decatlón|decatlon"],
+ ["Deporte", "E", "e", "Deporte de combate en el que se usa una espada, un florete o un sable.", "esgrima"],
+ ["Deporte", "F", "e", "Deporte de equipo en el que se juega con los pies y gana quien mete más goles.", "fútbol|futbol"],
+ ["Deporte", "G", "e", "Deporte que se practica con aparatos como la barra, las anillas o el potro.", "gimnasia"],
+ ["Deporte", "H", "e", "Deporte que se juega con un stick y una bola, sobre hierba, hielo o patines.", "hockey|jockey"],
+ ["Deporte", "I", "c", "Objeto que se pasan los corredores en una carrera de relevos.", "testigo"],
+ ["Deporte", "J", "e", "Arte marcial japonesa cuyo nombre significa 'camino suave'.", "judo|yudo"],
+ ["Deporte", "K", "e", "Arte marcial japonesa de golpes, con cinturones de colores y katas.", "kárate|karate"],
+ ["Deporte", "L", "e", "Prueba de atletismo en la que se arroja un disco, un martillo, un peso o una jabalina.", "lanzamiento|lanzamientos"],
+ ["Deporte", "M", "e", "Carrera de 42,195 kilómetros.", "maratón|maraton"],
+ ["Deporte", "N", "e", "Deporte que se practica en el agua con estilos como el crol o la braza.", "natación|natacion"],
+ ["Deporte", "Ñ", "c", "Actividad deportiva que consiste en subir montañas.", "montañismo"],
+ ["Deporte", "O", "e", "Competición deportiva internacional que se celebra cada cuatro años y cuyo símbolo son cinco aros.", "olimpiadas|olimpiada|juegos olímpicos|juegos olimpicos|olimpiadas"],
+ ["Deporte", "P", "e", "Deporte de raqueta que se juega en una pista con paredes, muy popular en España.", "pádel|padel"],
+ ["Deporte", "Q", "c", "Deporte de invierno en el que te deslizas por la nieve con dos tablas.", "esquí|esqui"],
+ ["Deporte", "R", "e", "En el fútbol, acción de esquivar a un rival llevando el balón.", "regate"],
+ ["Deporte", "S", "e", "Deporte que consiste en deslizarse sobre las olas con una tabla.", "surf|surfing"],
+ ["Deporte", "T", "e", "Deporte de raqueta con red que se juega en pistas de tierra batida, hierba o cemento.", "tenis"],
+ ["Deporte", "U", "c", "Lucha tradicional japonesa entre luchadores muy pesados.", "sumo"],
+ ["Deporte", "V", "e", "Deporte en el que dos equipos golpean el balón con las manos por encima de una red.", "voleibol|voley|vóley|balonvolea"],
+ ["Deporte", "W", "e", "Deporte acuático que se practica sobre una tabla con vela.", "windsurf"],
+ ["Deporte", "X", "c", "Deporte de combate con guantes que se practica en un ring.", "boxeo"],
+ ["Deporte", "Y", "c", "Deporte de equipo que se juega con un balón ovalado.", "rugby"],
+ ["Deporte", "Z", "c", "Capacidad física básica que permite vencer una resistencia.", "fuerza"],
+ ["Cuerpo humano", "A", "e", "Vaso sanguíneo que lleva la sangre desde el corazón al resto del cuerpo.", "arteria|arterias"],
+ ["Cuerpo humano", "B", "e", "Músculo del brazo que tiene dos cabezas.", "bíceps|biceps"],
+ ["Cuerpo humano", "C", "e", "Órgano que bombea la sangre por todo el cuerpo.", "corazón|corazon"],
+ ["Cuerpo humano", "D", "e", "Músculo principal de la respiración, situado debajo de los pulmones.", "diafragma"],
+ ["Cuerpo humano", "E", "e", "Órgano en forma de bolsa donde se digieren los alimentos después del esófago.", "estómago|estomago"],
+ ["Cuerpo humano", "F", "e", "Hueso más largo del cuerpo humano.", "fémur|femur"],
+ ["Cuerpo humano", "G", "e", "Órganos que fabrican sustancias como las hormonas, la saliva o el sudor.", "glándulas|glandulas|glándula|glandula"],
+ ["Cuerpo humano", "H", "e", "Órgano grande del abdomen que produce la bilis.", "hígado|higado"],
+ ["Cuerpo humano", "I", "e", "Órgano largo y enrollado donde se absorben los nutrientes.", "intestino|intestinos"],
+ ["Cuerpo humano", "J", "c", "Órgano de la vista.", "ojo|ojos"],
+ ["Cuerpo humano", "K", "e", "Unidad con la que se mide la energía que aportan los alimentos.", "kilocaloría|kilocaloria|kilocalorías|kilocalorias"],
+ ["Cuerpo humano", "L", "e", "Órgano de la boca con el que notamos los sabores.", "lengua"],
+ ["Cuerpo humano", "M", "e", "Órgano que se contrae para que podamos movernos.", "músculo|musculo|músculos|musculos"],
+ ["Cuerpo humano", "N", "e", "Órgano del olfato.", "nariz"],
+ ["Cuerpo humano", "Ñ", "c", "Órganos que filtran la sangre y fabrican la orina.", "riñones|riñón|riñon"],
+ ["Cuerpo humano", "O", "e", "Órgano del sentido de la audición.", "oído|oido|oídos|oidos|oreja"],
+ ["Cuerpo humano", "P", "e", "Órganos donde el oxígeno del aire pasa a la sangre.", "pulmones|pulmón|pulmon"],
+ ["Cuerpo humano", "Q", "c", "Tubo que lleva el aire desde la laringe hasta los bronquios.", "tráquea|traquea"],
+ ["Cuerpo humano", "R", "e", "Articulación que une el muslo con la pierna.", "rodilla"],
+ ["Cuerpo humano", "S", "e", "Líquido rojo que recorre el cuerpo por venas y arterias.", "sangre"],
+ ["Cuerpo humano", "T", "e", "Estructura que une un músculo con un hueso.", "tendón|tendon|tendones"],
+ ["Cuerpo humano", "U", "e", "Parte dura que protege la punta de los dedos.", "uña|uñas"],
+ ["Cuerpo humano", "V", "e", "Vasos sanguíneos que devuelven la sangre al corazón.", "venas|vena"],
+ ["Cuerpo humano", "X", "c", "Gas del aire que necesitan todas nuestras células.", "oxígeno|oxigeno"],
+ ["Cuerpo humano", "Z", "c", "Parte del cuerpo donde se encuentra el cerebro.", "cabeza"],
+ ["Respiración", "A", "e", "Comunidad que ayuda a deportistas a mejorar su salud y su rendimiento a través de la respiración.", "Atletas Imparables|atletas imparables"],
+ ["Respiración", "B", "e", "Apellido del fisiólogo danés que descubrió que el dióxido de carbono facilita la liberación de oxígeno desde la hemoglobina hacia las células.", "Bohr|Christian Bohr|bohr|efecto bohr"],
+ ["Respiración", "B", "e", "Siglas del test en reposo que mide en segundos el tiempo hasta sentir el primer deseo distintivo de respirar tras una exhalación normal.", "BOLT|test bolt|bol|bolt test|volt|bold"],
+ ["Respiración", "B", "e", "Dimensión de la respiración funcional que trabaja el movimiento en 360 grados del diafragma y la expansión de las costillas inferiores.", "biomecánica|biomecanica|dimensión biomecánica|dimension biomecanica"],
+ ["Respiración", "B", "e", "Primera dimensión del método Oxygen Advantage, centrada en el equilibrio de gases sanguíneos y la tolerancia al dióxido de carbono.", "bioquímica|bioquimica|dimensión bioquímica|dimension bioquimica"],
+ ["Respiración", "B", "e", "Órgano situado en el abdomen que actúa como reserva de sangre y libera glóbulos rojos a la circulación durante las apneas intensas.", "bazo"],
+ ["Respiración", "B", "e", "Técnica de respiración intensa y rítmica originaria del yoga e integrada en sesiones avanzadas para estimular el sistema nervioso y aumentar la energía.", "bhastrika|bastrika|respiración bhastrika"],
+ ["Respiración", "C", "e", "Dimensión de la respiración que regula el ritmo y la frecuencia, buscando acercarse a unas 6 respiraciones por minuto.", "cadencia|cadencia respiratoria|respiración cadenciada|respiracion cadenciada"],
+ ["Respiración", "C", "e", "Ejercicio para principiantes en el que nos tumbamos boca abajo apoyando la frente en los antebrazos para sentir cómo el abdomen empuja el suelo al inhalar.", "cocodrilo|respiración de cocodrilo|respiracion de cocodrilo"],
+ ["Respiración", "C", "e", "Estructuras internas de la nariz encargadas de calentar, humedecer, filtrar y ralentizar el aire que inhalamos.", "cornetes|cornete|cornetes nasales"],
+ ["Respiración", "C", "e", "Ejercicio que sincroniza el ritmo respiratorio (inhalando en 5 segundos y exhalando en 5 segundos) con la variabilidad de la frecuencia cardíaca.", "coherencia cardíaca|coherencia cardiaca|coherencia"],
+ ["Respiración", "C", "e", "Ejercicio de concentración de cuatro fases iguales: inhalar, retener con aire, exhalar y retener sin aire.", "cuadrada|respiración cuadrada|respiracion cuadrada"],
+ ["Respiración", "D", "e", "Gas considerado desecho que es clave para la respiración y para liberar el oxígeno hacia las células.", "dióxido de carbono|dioxido de carbono|co2|ce o dos"],
+ ["Respiración", "D", "e", "Principal músculo respiratorio con forma de paracaídas o cúpula situado debajo de los pulmones.", "diafragma"],
+ ["Respiración", "D", "e", "Pequeño dispositivo mecánico que se coloca en las fosas nasales para abrirlas y facilitar el paso del aire durante el deporte o el sueño.", "dilatador nasal|dilatador|dilatadores nasales"],
+ ["Respiración", "D", "e", "Ejercicio matutino para activar el cuerpo y evitar la somnolencia con proporción 4 segundos de inhalación, 16 de retención, 8 de exhalación y 4 en vacío.", "despertar|ejercicio despertar"],
+ ["Respiración", "E", "e", "Fase pasiva del ciclo respiratorio cuya prolongación estimula el nervio vago y activa la relajación.", "exhalación|exhalacion|espiración|espiracion"],
+ ["Respiración", "E", "e", "Hormona segregada por los riñones que estimula la producción de glóbulos rojos cuando entrenamos con apneas simulando altitud.", "eritropoyetina|epo|eritropoietina"],
+ ["Respiración", "E", "e", "Ejercicio en movimiento que consiste en subir peldaños en apnea, de uno en uno o de dos en dos, para entrenar la tolerancia al CO2.", "escaleras en apnea|escaleras"],
+ ["Respiración", "E", "e", "Ejercicio intermedio-avanzado tumbados boca arriba en el que vaciamos por completo los pulmones succionando el abdomen antes de retener el aire.", "exhalaciones completas|exhalación completa|exhalacion completa"],
+ ["Respiración", "F", "e", "Estado psicológico de concentración plena y rendimiento óptimo que inducimos visualizando e inhalando en 5 segundos y exhalando en 6.", "flow|estado de flow|flujo"],
+ ["Respiración", "F", "e", "Número de respiraciones que realizamos en un minuto.", "frecuencia respiratoria|frecuencia"],
+ ["Respiración", "F", "e", "Cada una de las dos aberturas de la nariz por donde debe entrar y salir el aire el 100% del tiempo.", "fosa nasal|fosas nasales|fosa|fosas"],
+ ["Respiración", "F", "e", "Ejercicio de fuerza para el tren superior que podemos realizar en apnea o con ritmo LSD y SportsMask.", "flexiones|flexiones en apnea|flexiones lsd"],
+ ["Respiración", "G", "e", "Células sanguíneas encargadas de transportar el oxígeno y que el bazo libera a la circulación durante las apneas intensas.", "glóbulos rojos|globulos rojos|glóbulo rojo|globulo rojo"],
+ ["Respiración", "G", "e", "Abertura superior de la laringe que mantenemos relajada y sin bloquear con fuerza durante las retenciones de aire.", "glotis"],
+ ["Respiración", "G", "e", "Reserva de energía almacenada en los músculos y el hígado que el cuerpo consume mucho más rápido cuando hiperventilamos y entramos en fatiga anaeróbica.", "glucógeno|glucogeno"],
+ ["Respiración", "H", "e", "Método de entrenamiento que combina apneas exhalatorias con ejercicio.", "hipóxico/hipercápnico|hipoxico/hipercapnico|hipóxico hipercápnico|hipoxico hipercapnico|entrenamiento hipóxico hipercápnico"],
+ ["Respiración", "H", "e", "Exceso de ventilación pulmonar que elimina demasiado dióxido de carbono y reduce la oxigenación celular.", "hiperventilación|hiperventilacion"],
+ ["Respiración", "H", "e", "Ejercicio respiratorio en el que emitimos un zumbido al exhalar por la nariz para multiplicar la producción de óxido nítrico en los senos paranasales.", "humming|ejercicio humming|hamming"],
+ ["Respiración", "H", "e", "Sensación o necesidad de respirar que entrenamos de forma ligera y tolerable al reducir el volumen de aire en los ejercicios bioquímicos.", "hambre de aire"],
+ ["Respiración", "H", "e", "Proteína presente en los glóbulos rojos que transporta el oxígeno y lo libera en las células gracias a la presencia de dióxido de carbono.", "hemoglobina"],
+ ["Respiración", "I", "e", "Fase activa del ciclo respiratorio en la que el diafragma se contrae y desciende para que entre el aire.", "inhalación|inhalacion|inspiración|inspiracion"],
+ ["Respiración", "I", "e", "Músculos situados entre las costillas que colaboran en la expansión tridimensional de la caja torácica.", "intercostales|músculos intercostales|musculos intercostales"],
+ ["Respiración", "I", "e", "Trastorno del sueño que podemos combatir activando el sistema nervioso parasimpático mediante ejercicios como el 4-7-8 o la respiración de rescate.", "insomnio"],
+ ["Respiración", "J", "e", "Respiración rápida, ruidosa y superficial por la boca que debemos evitar tras romper una apnea en nuestros entrenamientos.", "jadeo|jadear|jadeos"],
+ ["Respiración", "J", "c", "Acción de aflojar la tensión de los hombros, el cuello y la mandíbula, requisito fundamental durante las apneas para no gastar oxígeno de más.", "relajar|relajación|relajacion"],
+ ["Respiración", "J", "c", "Conjunto de las costillas y el esternón que se expande de forma tridimensional gracias al diafragma y los músculos intercostales.", "caja torácica|caja toracica"],
+ ["Respiración", "K", "e", "Médico ucraniano pionero en investigar los peligros de la hiperventilación crónica y creador del método en el que se inspiró Patrick McKeown.", "Konstantin Buteyko|konstantin|constantin buteyko|buteyko"],
+ ["Respiración", "K", "c", "Ejercicio avanzado de Oxygen Advantage que combina apneas en movimiento con caminatas y trotes intensos seguido de recuperación activa sin detenerse.", "Shark Fit|shark fit|sharkfit"],
+ ["Respiración", "K", "e", "Término tradicional del pranayama que designa la retención de la respiración, ya sea con los pulmones llenos o vacíos.", "kumbhaka|kumbaka"],
+ ["Respiración", "L", "e", "Primera cualidad de la regla LSD, que indica que debemos reducir el volumen de aire para crear una sutil hambre de aire.", "ligera|lenta|respiración ligera|respiracion ligera"],
+ ["Respiración", "L", "e", "Ejercicio para principiantes donde colocamos un objeto sobre el ombligo estando tumbados boca arriba para entrenar la respiración diafragmática.", "libro flotante|libro"],
+ ["Respiración", "L", "e", "Órgano muscular que en reposo debe descansar pegado al paladar para garantizar el sellado labial y la respiración nasal.", "lengua"],
+ ["Respiración", "L", "e", "Compuesto metabólico que se acumula en la sangre y los músculos durante el ejercicio intenso y cuyo umbral retrasamos con el entrenamiento en apnea.", "lactato|ácido láctico|acido lactico"],
+ ["Respiración", "M", "e", "Cinta adhesiva diseñada específicamente para rodear los labios y garantizar la respiración nasal durante el sueño.", "MyoTape|myo tape|maio tape|maiotape|mio tape|miotape"],
+ ["Respiración", "M", "e", "Ejercicio para BOLT mayor a 20 donde pinzamos la nariz en apnea e imitamos el acto de inhalar moviendo el abdomen hacia adentro y hacia afuera.", "medusa|ejercicio medusa"],
+ ["Respiración", "M", "e", "Apellido de Patrick, creador del método Oxygen Advantage y autor de referencia mundial en respiración funcional.", "McKeown|Patrick McKeown|mckeown|mac keown"],
+ ["Respiración", "M", "e", "Orgánulos celulares encargados de producir energía (ATP) utilizando el oxígeno que llega gracias al Efecto Bohr.", "mitocondrias|mitocondria"],
+ ["Respiración", "N", "e", "Personaje de cómic que enseña cómo mejorar tu respiración.", "Nosy|nosi|nosey|nozy"],
+ ["Respiración", "Ñ", "c", "Momento del día, justo al despertar, ideal para medir nuestro test BOLT en condiciones de reposo.", "mañana|por la mañana|la mañana"],
+ ["Respiración", "Ñ", "c", "Estado de descanso nocturno cuya calidad y profundidad mejoran drásticamente al eliminar los ronquidos y respirar por la nariz.", "sueño|el sueño"],
+ ["Respiración", "Ñ", "c", "Ejercicio apto para todos los niveles en el que realizamos apneas equivalentes a la mitad de nuestra puntuación BOLT seguidas de recuperación controlada.", "pequeñas retenciones|pequenas retenciones"],
+ ["Respiración", "O", "e", "Gas vital para la producción de energía celular cuya liberación desde la sangre depende de la presencia de dióxido de carbono.", "oxígeno|oxigeno"],
+ ["Respiración", "O", "e", "Gas vasodilatador, broncodilatador y antibacteriano que se produce en los senos paranasales y se potencia con el ejercicio de humming.", "óxido nítrico|oxido nitrico|óxido|oxido"],
+ ["Respiración", "O", "e", "Nombre del método internacional de entrenamiento respiratorio creado por Patrick McKeown en el que nos especializamos.", "Oxygen Advantage|oxygen advantage"],
+ ["Respiración", "P", "e", "Rama del sistema nervioso autónomo encargada del descanso, la recuperación y la digestión, que activamos con exhalaciones lentas.", "parasimpático|parasimpatico|sistema parasimpático|sistema parasimpatico"],
+ ["Respiración", "P", "e", "Ejercicio donde colocamos un dedo bajo la nariz y respiramos tan sutilmente que no sentiríamos moverse el objeto que le da nombre.", "pluma|respiración de pluma|respiracion de pluma"],
+ ["Respiración", "P", "e", "Dispositivo que se coloca en el dedo para medir la saturación de oxígeno en sangre y vigilar que no baje del 80% durante los ejercicios de simulación de altitud.", "pulsioxímetro|pulsioximetro|oxímetro|oximetro"],
+ ["Respiración", "P", "e", "Fuerza interna que generamos en la cavidad del abdomen al activar correctamente el diafragma en 360 grados y que da soporte a la columna vertebral.", "presión intraabdominal|presion intraabdominal|pia"],
+ ["Respiración", "Q", "e", "Receptores nerviosos del tronco encefálico y las arterias que detectan el aumento de dióxido de carbono y envían la señal de respirar.", "quimiorreceptores|quimiorreceptor|quimioreceptores"],
+ ["Respiración", "Q", "e", "Sensibilidad del organismo a los cambios en los gases sanguíneos, especialmente al CO2, la cual buscamos reducir mediante el entrenamiento con apneas.", "quimiosensibilidad"],
+ ["Respiración", "Q", "c", "Conducto de las vías respiratorias que lleva el aire desde la laringe hasta los bronquios.", "tráquea|traquea"],
+ ["Respiración", "R", "e", "Ejercicio de emergencia para calmar la ansiedad o hiperventilación en el que ahuecamos las manos sobre nariz y boca para reinhalar un poco de CO2.", "rescate|respiración de rescate|respiracion de rescate"],
+ ["Respiración", "R", "e", "Ruido respiratorio nocturno causado principalmente por la vibración de los tejidos de la garganta al dormir con la boca abierta.", "ronquido|ronquidos|roncar"],
+ ["Respiración", "R", "e", "Fase posterior a una apnea en la que debemos restablecer la respiración de forma nasal, sutil y controlada.", "recuperación|recuperacion"],
+ ["Respiración", "R", "e", "Ejercicio para BOLT mínimo de 20 en el que las apneas suben de 2 a 9 segundos y luego bajan de 9 a 1 segundo respirando tres ciclos entre cada una.", "recuperación por fases|recuperacion por fases|respiración de recuperación por fases"],
+ ["Respiración", "S", "e", "Siglas en español de la Simulación de Entrenamiento en Altitud mediante apneas en movimiento.", "SEA|sea"],
+ ["Respiración", "S", "e", "Herramienta oficial en forma de máscara deportiva que regula el flujo de aire para fortalecer la musculatura respiratoria.", "SportsMask|sports mask|sportmask|sport mask"],
+ ["Respiración", "S", "e", "Ejercicio de reseteo rápido para el estrés que consiste en una doble inhalación nasal seguida de una exhalación larga y lenta.", "suspiro fisiológico|suspiro fisiologico|suspiro"],
+ ["Respiración", "S", "e", "Rama del sistema nervioso autónomo que activa la respuesta de lucha o huida y que se dispara cuando hiperventilamos o respiramos por la boca.", "simpático|simpatico|sistema simpático|sistema simpatico"],
+ ["Respiración", "S", "e", "Porcentaje de hemoglobina cargada de oxígeno en la sangre (SpO2), que en los ejercicios de simulación de altitud buscamos disminuir de forma controlada sin bajar del 80%.", "saturación|saturacion|saturación de oxígeno|saturacion de oxigeno"],
+ ["Respiración", "T", "e", "Siglas del Test de Máxima Retención en el que contamos el número máximo de pasos que podemos caminar en apnea.", "TMR|test tmr|mtb|mbt"],
+ ["Respiración", "T", "e", "Capacidad de nuestro cuerpo y nuestros quimiorreceptores para soportar niveles más altos de dióxido de carbono sin entrar en pánico ni jadear.", "tolerancia al CO2|tolerancia al dióxido de carbono|tolerancia al dioxido de carbono|tolerancia"],
+ ["Respiración", "T", "e", "Ejercicio de relajación en tres fases iguales (por ejemplo, de 3 segundos cada una): inhalación, exhalación y retención.", "triangular|respiración triangular|respiracion triangular|respiración triangular de descarga"],
+ ["Respiración", "T", "e", "Tipo de respiración disfuncional, superficial y localizada en la parte alta del pecho que debemos evitar activando el diafragma.", "torácica|toracica|respiración torácica|respiracion toracica"],
+ ["Respiración", "U", "e", "Punto o límite fisiológico, como el aeróbico o el de lactato, que logramos retrasar cuando entrenamos la respiración funcional.", "umbral|umbrales"],
+ ["Respiración", "U", "e", "Pequeña estructura con forma de campana al fondo del paladar blando que vibra cuando respiramos por la boca al dormir.", "úvula|uvula"],
+ ["Respiración", "U", "c", "Órganos principales del sistema respiratorio que en las apneas funcionales buscamos mantener vacíos tras una exhalación suave.", "pulmones|pulmón|pulmon"],
+ ["Respiración", "V", "e", "Nervio craneal más largo del cuerpo, clave del sistema parasimpático, que estimulamos mediante la respiración diafragmática y lenta.", "vago|nervio vago"],
+ ["Respiración", "V", "e", "Siglas del indicador fisiológico que mide la variación de tiempo entre latidos del corazón y que mejora con la respiración cadenciada y la coherencia cardíaca.", "VFC|variabilidad de la frecuencia cardíaca|variabilidad de la frecuencia cardiaca"],
+ ["Respiración", "V", "e", "Cantidad total de aire que inhalamos y exhalamos por minuto, la cual buscamos reducir y normalizar con la respiración ligera.", "volumen|volumen respiratorio|volumen minuto"],
+ ["Respiración", "V", "e", "Ensanchamiento de los vasos sanguíneos para mejorar la circulación y el transporte de oxígeno, provocado tanto por el dióxido de carbono como por el óxido nítrico.", "vasodilatación|vasodilatacion"],
+ ["Respiración", "W", "e", "Nombre del creador del famoso método holandés que utiliza hiperventilaciones y frío, técnica que siempre filtramos bajo estrictas reglas de seguridad.", "Wim Hof|wim|wimhof|vim hof"],
+ ["Respiración", "X", "c", "Estado de disminución de oxígeno en la sangre y los tejidos que provocamos de forma controlada e intermitente en las apneas largas.", "hipoxia|hipoxemia"],
+ ["Respiración", "X", "c", "Músculos situados entre las costillas que se expanden hacia los lados y hacia atrás durante una inhalación biomecánicamente correcta.", "intercostales externos|músculos intercostales externos"],
+ ["Respiración", "Y", "e", "Disciplina milenaria de la que provienen técnicas como el pranayama o bhastrika, que adaptamos con base científica.", "yoga"],
+ ["Respiración", "Y", "c", "Conjunto de técnicas de control respiratorio de la tradición oriental que incluyen la respiración alterna por las fosas nasales.", "pranayama"],
+ ["Respiración", "Z", "e", "Corredor legendario pionero en experimentar el entrenamiento con pausas respiratorias.", "Zátopek|zatopek|Emil Zátopek|emil zatopek"],
+ ["Respiración", "Z", "e", "Sonido vibratorio que generamos en la cavidad nasal al practicar el ejercicio humming para multiplicar la liberación de óxido nítrico.", "zumbido"],
+ ["Respiración", "Z", "c", "Accesorio que colocamos en la nariz durante los sprints o cuestas en apnea para mantener las fosas cerradas cómodamente mientras corremos.", "pinza nasal|pinza"],
+ ["Respiración", "A", "e", "Pequeños sacos en los pulmones donde se produce el intercambio de gases con la sangre.", "alvéolos|alveolos|alvéolo|alveolo|alveolos pulmonares"],
+ ["Mundial 2026", "A", "e", "Selección subcampeona del mundo, derrotada en la final.", "Argentina"],
+ ["Mundial 2026", "A", "e", "Estadio de Ciudad de México donde se jugó el partido inaugural.", "Azteca|estadio Azteca"],
+ ["Mundial 2026", "A", "e", "Ciudad estadounidense sede del Mundial cuyo estadio es el Mercedes-Benz Stadium.", "Atlanta"],
+ ["Mundial 2026", "B", "e", "Selección que dejó a Italia sin Mundial al ganarle por penaltis la final de la repesca europea.", "Bosnia|Bosnia y Herzegovina|Bosnia Herzegovina"],
+ ["Mundial 2026", "B", "e", "Selección europea a la que España ganó 2-1 en cuartos de final.", "Bélgica|belgica"],
+ ["Mundial 2026", "B", "e", "Centrocampista inglés que marcó 7 goles en el torneo.", "Bellingham|Jude Bellingham|belinham"],
+ ["Mundial 2026", "C", "e", "Defensa español elegido Mejor Jugador Joven del torneo.", "Cubarsí|cubarsi|Pau Cubarsí|pau cubarsi"],
+ ["Mundial 2026", "C", "e", "País organizador cuya mascota es un alce.", "Canadá|canada"],
+ ["Mundial 2026", "C", "e", "Selección africana formada por islas que jugó su primer Mundial.", "Cabo Verde"],
+ ["Mundial 2026", "D", "e", "Delantero francés que marcó 6 goles en el torneo.", "Dembélé|dembele|Ousmane Dembélé"],
+ ["Mundial 2026", "D", "e", "Ciudad de Texas sede del Mundial cuyo estadio es el AT&T Stadium.", "Dallas"],
+ ["Mundial 2026", "D", "e", "Nueva ronda eliminatoria con 32 selecciones que se estrenó en este Mundial.", "dieciseisavos|dieciseisavos de final"],
+ ["Mundial 2026", "E", "e", "País organizador con 11 de las 16 ciudades sede.", "Estados Unidos|EEUU|USA"],
+ ["Mundial 2026", "F", "e", "Selección a la que España ganó 2-0 en semifinales.", "Francia"],
+ ["Mundial 2026", "F", "e", "Nombre de pila del jugador que marcó el gol de la final.", "Ferran|Ferrán"],
+ ["Mundial 2026", "G", "e", "Premio que se entrega al mejor portero del torneo.", "Guante de Oro|guante"],
+ ["Mundial 2026", "G", "e", "Ciudad mexicana sede del Mundial cuyo estadio es el Estadio Akron.", "Guadalajara"],
+ ["Mundial 2026", "H", "e", "Delantero noruego que marcó 7 goles en el torneo.", "Haaland|haland|jaland|Erling Haaland"],
+ ["Mundial 2026", "H", "e", "Selección caribeña que volvió a un Mundial por primera vez desde 1974.", "Haití|haiti"],
+ ["Mundial 2026", "H", "e", "Ciudad de Texas sede del Mundial cuyo estadio es el NRG Stadium.", "Houston"],
+ ["Mundial 2026", "I", "e", "Selección cuatro veces campeona que no se clasificó tras perder la repesca contra Bosnia.", "Italia"],
+ ["Mundial 2026", "J", "e", "Selección asiática que jugó su primer Mundial.", "Jordania"],
+ ["Mundial 2026", "J", "e", "Mes en el que se jugó la final.", "julio"],
+ ["Mundial 2026", "J", "e", "Mes en el que empezó el torneo.", "junio"],
+ ["Mundial 2026", "K", "e", "Delantero y capitán de Inglaterra que marcó 6 goles en el torneo.", "Kane|Harry Kane|kein"],
+ ["Mundial 2026", "K", "e", "Ciudad estadounidense sede del Mundial cuyo estadio es el Arrowhead Stadium.", "Kansas City|Kansas"],
+ ["Mundial 2026", "L", "e", "Nombre de pila del argentino que ganó el Balón de Plata.", "Lionel|Leo|Lionel Messi|Leo Messi"],
+ ["Mundial 2026", "L", "e", "Ciudad estadounidense sede del Mundial cuyo estadio es el SoFi Stadium.", "Los Ángeles|los angeles"],
+ ["Mundial 2026", "M", "e", "Delantero francés que ganó la Bota de Oro con 10 goles.", "Mbappé|mbappe|Kylian Mbappé|kylian mbappe|embape"],
+ ["Mundial 2026", "M", "e", "Estadio de Nueva Jersey donde se jugó la final.", "MetLife|MetLife Stadium|met life"],
+ ["Mundial 2026", "M", "e", "Nombre del alce que es la mascota de Canadá.", "Maple|meipol|meipel"],
+ ["Mundial 2026", "N", "e", "Nombre de pila del extremo español que prolongó de cabeza el balón en el gol de la final.", "Nico|Nico Williams"],
+ ["Mundial 2026", "N", "e", "Selección nórdica que volvió al Mundial por primera vez desde 1998 y llegó a cuartos de final.", "Noruega"],
+ ["Mundial 2026", "Ñ", "c", "Selección que ganó su segundo Mundial, el primero desde 2010.", "España|espana"],
+ ["Mundial 2026", "O", "e", "Metal del Balón que recibió Rodri como mejor jugador del torneo.", "oro|balón de oro|balon de oro"],
+ ["Mundial 2026", "O", "c", "Número de selecciones que participaron en el torneo.", "cuarenta y ocho|48"],
+ ["Mundial 2026", "P", "e", "Selección que ganó el premio Fair Play.", "Países Bajos|paises bajos|Holanda"],
+ ["Mundial 2026", "P", "e", "Apellido del lateral español que dio el centro del gol de la final.", "Porro|Pedro Porro"],
+ ["Mundial 2026", "P", "e", "Tiempo extra en el que se decidió la final.", "prórroga|prorroga"],
+ ["Mundial 2026", "Q", "e", "Selección asiática, anfitriona en 2022, que en 2026 se clasificó por primera vez jugando la fase de clasificación.", "Qatar|Catar"],
+ ["Mundial 2026", "R", "e", "Centrocampista y capitán de España que ganó el Balón de Oro del torneo.", "Rodri|Rodrigo|Rodri Hernández"],
+ ["Mundial 2026", "S", "e", "Selección africana que perdió 2-0 contra México en el partido inaugural.", "Sudáfrica|sudafrica"],
+ ["Mundial 2026", "S", "e", "Ronda en la que España eliminó a Francia.", "semifinales|semifinal|semis"],
+ ["Mundial 2026", "S", "e", "Apellido del portero español que ganó el Guante de Oro.", "Simón|simon|Unai Simón"],
+ ["Mundial 2026", "T", "e", "Apellido del jugador que marcó el gol de la final en la prórroga.", "Torres|Ferran Torres"],
+ ["Mundial 2026", "T", "e", "Nombre del balón oficial del Mundial.", "Trionda"],
+ ["Mundial 2026", "T", "e", "Ciudad canadiense sede del Mundial cuyo estadio es el BMO Field.", "Toronto"],
+ ["Mundial 2026", "U", "e", "Nombre de pila del portero que ganó el Guante de Oro.", "Unai|Unai Simón"],
+ ["Mundial 2026", "U", "e", "Selección de Asia Central que jugó su primer Mundial.", "Uzbekistán|uzbekistan"],
+ ["Mundial 2026", "V", "e", "Ciudad canadiense sede del Mundial cuyo estadio es el BC Place.", "Vancouver|vancuver"],
+ ["Mundial 2026", "W", "e", "Apellido del extremo español que prolongó de cabeza el balón en el gol de la final.", "Williams|Nico Williams"],
+ ["Mundial 2026", "W", "e", "Ciudad donde se celebró el sorteo del Mundial, en el Kennedy Center.", "Washington"],
+ ["Mundial 2026", "X", "c", "País organizador que jugó el partido inaugural y cuya mascota es un jaguar.", "México|mexico"],
+ ["Mundial 2026", "Y", "c", "Ciudad que comparte con Nueva Jersey la sede donde se jugó la final.", "Nueva York|New York"],
+ ["Mundial 2026", "Y", "c", "Delantero español que marcó 5 goles en el torneo.", "Oyarzabal|Mikel Oyarzabal"],
+ ["Mundial 2026", "Z", "e", "Nombre del jaguar que es la mascota de México.", "Zayu|zayú|sayu"],
+ ["Mundial 2026", "Z", "c", "Selección sorpresa que llegó a cuartos y cayó contra Argentina en la prórroga.", "Suiza"],
+ ["Paula y las habitaciones mágicas", "A", "e", "Líquido muy frío que Paula quería beber y por el que le pedía a su papá que la acompañara hasta la cocina.", "agua|el agua"],
+ ["Paula y las habitaciones mágicas", "A", "e", "Gesto de cariño y felicitación que el papá le dio a Paula en el salón tras lograr ir sola a su cuarto.", "abrazo|un abrazo|gran abrazo"],
+ ["Paula y las habitaciones mágicas", "A", "e", "Capacidad de desenvolverse por uno mismo sin depender de los demás, valor clave que Paula desarrolla en el cuento.", "autonomía|la autonomía"],
+ ["Paula y las habitaciones mágicas", "B", "e", "Habitación de la casa a la que la mamá llama cariñosamente «apestoso», pero que también cuida y protege a Paula.", "baño|el baño"],
+ ["Paula y las habitaciones mágicas", "B", "e", "Nombre de la editorial que publicó el cuento Paula y las habitaciones mágicas.", "babidi-bú|babidibú|babidi bu|editorial babidi-bú"],
+ ["Paula y las habitaciones mágicas", "B", "e", "Objeto o saquito propuesto en el juego final del libro para guardar los tesoros encontrados por la casa.", "bolsa|una bolsa|la bolsa"],
+ ["Paula y las habitaciones mágicas", "C", "e", "Habitación de la casa a la que Paula pedía a su papá que fuera con ella para tomar agua fría.", "cocina|la cocina"],
+ ["Paula y las habitaciones mágicas", "C", "e", "Número de años que tiene Paula al comenzar la historia.", "cuatro|4"],
+ ["Paula y las habitaciones mágicas", "C", "e", "Vehículo espacial mencionado en la rima final del cuento: «a la luna se va en...».", "cohete|un cohete|el cohete"],
+ ["Paula y las habitaciones mágicas", "D", "e", "Primera comida de la mañana, momento tras el cual la mamá le revela a Paula el secreto de las habitaciones.", "desayuno|desayunar|el desayuno"],
+ ["Paula y las habitaciones mágicas", "D", "e", "Habitación de la casa destinada a dormir y donde Paula guarda sus juguetes y a su muñeca.", "dormitorio|cuarto|su cuarto|el cuarto|el dormitorio|habitación"],
+ ["Paula y las habitaciones mágicas", "D", "e", "Nombre propio que aparece en el sello de la colección del libro: «La mirada de...».", "daniel"],
+ ["Paula y las habitaciones mágicas", "E", "e", "Figura o pegatina de valentía que se coloca en el mapa cada vez que se conquista una habitación mágica.", "estrella|una estrella|la estrella|estrellas"],
+ ["Paula y las habitaciones mágicas", "E", "e", "Título honorífico que recibe Paula en su diploma final tras recorrer la casa: «Certificado de ... valiente».", "exploradora|explorador"],
+ ["Paula y las habitaciones mágicas", "E", "e", "Cualidad comprensiva recomendada a las familias para establecer límites respetuosos que aporten seguridad.", "empatía|la empatía"],
+ ["Paula y las habitaciones mágicas", "F", "e", "Característica de la temperatura del agua que Paula deseaba beber en la cocina.", "fría|muy fría|fria"],
+ ["Paula y las habitaciones mágicas", "F", "e", "Grupo que forman Paula y sus padres, cuyo apoyo y comprensión permiten desarrollar seguridad personal.", "familia|la familia|su familia"],
+ ["Paula y las habitaciones mágicas", "F", "e", "Emoción de desánimo o enfado que la guía para padres recomienda escuchar y validar con calma.", "frustración|la frustración"],
+ ["Paula y las habitaciones mágicas", "G", "e", "Accesorio con montura que llevan en el rostro tanto Paula como su mamá.", "gafas|las gafas|lentes|los lentes|anteojos|los anteojos"],
+ ["Paula y las habitaciones mágicas", "G", "e", "Tamaño del abrazo que su papá le dio en el salón al volver sola de su cuarto.", "grande|gran"],
+ ["Paula y las habitaciones mágicas", "G", "e", "Manera paso a paso y sin prisas en la que se aconseja fomentar la autonomía de los niños.", "gradual|de forma gradual|forma gradual"],
+ ["Paula y las habitaciones mágicas", "H", "e", "Espacios de la vivienda que dan título a la obra y que Paula temía visitar en solitario.", "habitaciones|las habitaciones|habitación|la habitación"],
+ ["Paula y las habitaciones mágicas", "H", "e", "Casa acogedora y familiar en cuyos rincones habita el verdadero cariño.", "hogar|el hogar"],
+ ["Paula y las habitaciones mágicas", "I", "e", "Sensación de temor, duda o falta de confianza que experimentaba Paula antes de atreverse a ir sola.", "inseguridad|la inseguridad"],
+ ["Paula y las habitaciones mágicas", "J", "e", "Nombre de pila del autor del cuento: ... Carlos Moreno Pérez.", "josé|jose"],
+ ["Paula y las habitaciones mágicas", "J", "e", "Objetos lúdicos y entretenidos con los que a Paula le encantaba pasar el tiempo.", "juguetes|los juguetes|juguete|el juguete"],
+ ["Paula y las habitaciones mágicas", "J", "e", "Dinámica divertida propuesta en las páginas finales para que los niños exploren su casa sin miedo.", "juego|el juego|un juego"],
+ ["Paula y las habitaciones mágicas", "K", "c", "Puesto o caseta callejera donde habitualmente se compran periódicos, revistas y cuentos infantiles.", "kiosco|kiosko|quiosco|el kiosco|el quiosco"],
+ ["Paula y las habitaciones mágicas", "K", "c", "Fruta dulce y verde que sirve de ejemplo para dar opciones a los pequeños al elegir su desayuno.", "kiwi|el kiwi"],
+ ["Paula y las habitaciones mágicas", "L", "e", "Claridad natural que entraba por la ventana del dormitorio y que parecía darle la bienvenida a Paula.", "luz|la luz"],
+ ["Paula y las habitaciones mágicas", "L", "e", "Astro nocturno hacia el que se va en cohete en la rima final del cuento.", "luna|la luna"],
+ ["Paula y las habitaciones mágicas", "L", "e", "Pautas de seguridad que los padres deben marcar con respeto y empatía para proteger a los niños.", "límites|los límites|límite|el límite"],
+ ["Paula y las habitaciones mágicas", "M", "e", "Familiar que se agachó para explicarle a Paula que los cuartos de la casa eran mágicos.", "mamá|madre|su mamá|su madre|la mamá|la madre"],
+ ["Paula y las habitaciones mágicas", "M", "e", "Juguete infantil llamado Nena que Paula fue a rescatar solita a su cuarto.", "muñeca|su muñeca|la muñeca|una muñeca"],
+ ["Paula y las habitaciones mágicas", "M", "e", "Plano dibujado en cartulina que se utiliza en la actividad final para marcar las zonas exploradas.", "mapa|un mapa|el mapa|mapa mágico"],
+ ["Paula y las habitaciones mágicas", "M", "e", "Emoción de temor que Paula sentía al inicio y que logra superar con apoyo de sus padres.", "miedo|el miedo"],
+ ["Paula y las habitaciones mágicas", "N", "e", "Nombre de la muñeca preferida de Paula que estaba en su habitación.", "nena"],
+ ["Paula y las habitaciones mágicas", "N", "e", "Agitación e inquietud que sintió Paula antes de dar el paso de entrar sola a su cuarto.", "nervios|los nervios|nerviosismo"],
+ ["Paula y las habitaciones mágicas", "Ñ", "c", "Paula es una ... alegre y curiosa de cuatro años.", "niña|una niña|la niña"],
+ ["Paula y las habitaciones mágicas", "Ñ", "c", "Sentimiento que proporciona el hogar y que es lo que realmente protege a Paula", "cariño|el cariño"],
+ ["Paula y las habitaciones mágicas", "O", "e", "Sentimiento de satisfacción y alegría que sienten los padres al ver a Paula desenvolverse sola.", "orgullo|el orgullo"],
+ ["Paula y las habitaciones mágicas", "O", "e", "Lo que abrió mucho Paula, llena de asombro, cuando su mamá le desveló el secreto de la casa.", "ojos|los ojos"],
+ ["Paula y las habitaciones mágicas", "O", "e", "Distintas alternativas proporcionales que se le deben ofrecer al niño (como qué ropa ponerse) para que gane control.", "opciones|las opciones"],
+ ["Paula y las habitaciones mágicas", "P", "e", "Nombre de la niña protagonista del cuento.", "paula"],
+ ["Paula y las habitaciones mágicas", "P", "e", "Progenitor que prometió acudir «rápido como un rayo» si Paula lo necesitaba.", "papá|padre|el papá|su papá|el padre|su padre"],
+ ["Paula y las habitaciones mágicas", "P", "e", "Ropa de dormir que Paula fue a buscar sola a su cuarto tras la cena.", "pijama|el pijama|un pijama"],
+ ["Paula y las habitaciones mágicas", "Q", "e", "Actitud inmóvil en la que se detuvo Paula al entrar a su cuarto para escuchar con atención.", "quieta|muy quieta|se quedó quieta"],
+ ["Paula y las habitaciones mágicas", "Q", "e", "Deseo o intención que tuvo Paula cuando decidió ir a por su muñeca: ... ir a buscar a Nena.", "quiso|quiso ir|querer|quería"],
+ ["Paula y las habitaciones mágicas", "Q", "c", "Tamaño de los tesoros o juguetes que se esconden por las habitaciones en el juego final.", "pequeños|muy pequeños"],
+ ["Paula y las habitaciones mágicas", "R", "e", "Fenómeno meteorológico luminoso y rápido con el que el papá compara la velocidad con la que iría a ayudar a Paula.", "rayo|un rayo|el rayo"],
+ ["Paula y las habitaciones mágicas", "R", "e", "Cada una de las esquinas o partes de la casa donde se respira el cariño familiar.", "rincón|rincones|el rincón|cada rincón|un rincón"],
+ ["Paula y las habitaciones mágicas", "R", "e", "Técnica de elogio específico recomendada en la guía pedagógica para fortalecer la autoestima: ... positivo.", "refuerzo|el refuerzo|refuerzo positivo"],
+ ["Paula y las habitaciones mágicas", "S", "e", "Habitación principal o sala de estar de la casa donde los padres esperan a Paula.", "salón|el salón|sala|la sala|sala de estar|la sala de estar"],
+ ["Paula y las habitaciones mágicas", "S", "e", "Mensajes o pistas que, según la mamá, mandan las habitaciones para indicar que están contigo.", "señales|las señales|una señal"],
+ ["Paula y las habitaciones mágicas", "S", "e", "Sensación de tranquilidad, protección y ausencia de miedo que Paula descubre al final.", "seguridad|segura|la seguridad|estar segura|sentirse segura"],
+ ["Paula y las habitaciones mágicas", "T", "e", "Objetos especiales o juguetes ocultos que los niños deben buscar por las habitaciones durante el juego.", "tesoros|los tesoros|tesoro|un tesoro"],
+ ["Paula y las habitaciones mágicas", "T", "e", "Primera palabra del susurro tranquilizador que transmiten las paredes: «... está bien, Paula».", "todo"],
+ ["Paula y las habitaciones mágicas", "T", "e", "Lo que los padres sabían que Paula necesitaba para aprender a confiar en sí misma sin prisas.", "tiempo|un tiempo|mucho tiempo"],
+ ["Paula y las habitaciones mágicas", "U", "e", "Enfoque de seguridad interior trabajado en el libro: la magia de confiar en ... mismo.", "uno|uno mismo"],
+ ["Paula y las habitaciones mágicas", "U", "e", "Mensaje en imperativo que invita al lector a sumarse a la comunidad Desde su Mirada en la página final", "únete|unete"],
+ ["Paula y las habitaciones mágicas", "V", "e", "Cualidad de tener coraje y arrojo que Paula demuestra al superar sus temores.", "valentía|valiente|la valentía|ser valiente"],
+ ["Paula y las habitaciones mágicas", "V", "e", "Abertura del dormitorio por donde entraba una luz brillante al recibir a Paula.", "ventana|la ventana|una ventana"],
+ ["Paula y las habitaciones mágicas", "V", "e", "Actitud pedagógica de reconocer y acoger los sentimientos del menor: ... sus emociones.", "validar|validar sus emociones|validación"],
+ ["Paula y las habitaciones mágicas", "W", "e", "Sitio de internet o enlace al que se remite para obtener contenido extra del libro y que no quede solo en lo impreso.", "web|la web|sitio web|página web"],
+ ["Paula y las habitaciones mágicas", "X", "c", "Razón por la que las habitaciones no eran mágicas: no hacían ruidos raros ni cosas fuera de lo común o...", "extraordinarias|cosas extraordinarias"],
+ ["Paula y las habitaciones mágicas", "X", "c", "Condición de un ruido alarmante que Paula comprobó aliviada que no sonaba en su cuarto.", "extraño|extraños|raro|raros"],
+ ["Paula y las habitaciones mágicas", "X", "c", "Material adicional ofrecido a los lectores en la comunidad mediante enlace al final de la obra.", "extra|contenido extra"],
+ ["Paula y las habitaciones mágicas", "Y", "c", "Respaldo y comprensión familiar necesarios para alimentar la seguridad de Paula.", "apoyo|el apoyo"],
+ ["Paula y las habitaciones mágicas", "Y", "e", "Pronombre que encabeza el lema de la camiseta amarilla de Paula en su diploma: «... puedo con todo».", "yo"],
+ ["Paula y las habitaciones mágicas", "Z", "c", "Seguridad y fe en uno mismo que Paula aprende a desarrollar paso a paso.", "confianza|la confianza|autoconfianza"],
+ ["Paula y las habitaciones mágicas", "Z", "e", "Calzado infantil que se menciona como ejemplo de autonomía en la guía pedagógica: «intentaste atarte los...».", "zapatos|los zapatos|zapato"],
+ ["Imperio Agéntico", "A", "e", "Programa de IA capaz de razonar, usar herramientas y hacer tareas por su cuenta, y que da nombre al Imperio.", "agente|agentes"],
+ ["Imperio Agéntico", "A", "e", "Empresa creadora de Claude.", "Anthropic|antropic"],
+ ["Imperio Agéntico", "A", "e", "Nombre del nivel 2 de la comunidad, que desbloquea el OS Agéntico y el Glosario Imperial.", "Aprendiz"],
+ ["Imperio Agéntico", "B", "e", "Nombre de pila del fundador del Imperio Agéntico.", "Benjamín|Benjamin|Benja"],
+ ["Imperio Agéntico", "B", "e", "Programa que conversa o automatiza tareas por mensajes, como el que lleva el nombre de Grok en la comunidad.", "bot|bots|chatbot"],
+ ["Imperio Agéntico", "C", "e", "Animal al que hace referencia el apellido de los creadores de la comunidad.", "cordero|corderos"],
+ ["Imperio Agéntico", "C", "e", "Rango al que hay que llegar para participar en la sesión mensual donde se decide hacia dónde va el Imperio.", "comandante|comandantes"],
+ ["Imperio Agéntico", "C", "e", "Herramienta de Anthropic para programar con agentes desde la terminal, uno de los cursos estrella del Imperio.", "Claude Code|clod code|claude"],
+ ["Imperio Agéntico", "D", "e", "Adjetivo con el que se conocía al Imperio en sus inicios.", "digital|imperio digital"],
+ ["Imperio Agéntico", "D", "e", "Material con el que se entrena un modelo de inteligencia artificial.", "datos|los datos"],
+ ["Imperio Agéntico", "D", "e", "Nombre de la sesión maestra de Claude Code de Benjamín, inspirado en un personaje de la serie Suits.", "Donna|dona"],
+ ["Imperio Agéntico", "E", "e", "Proceso en el que un modelo aprende ajustando sus parámetros a partir de muchos ejemplos.", "entrenamiento|entrenar"],
+ ["Imperio Agéntico", "E", "e", "Nombre del nivel 1 de la comunidad.", "explorador|exploradores"],
+ ["Imperio Agéntico", "F", "e", "Secuencia de pasos automatizados que el soporte del Imperio revisa hasta que funcione.", "flujo|flujos|workflow|flujo de trabajo"],
+ ["Imperio Agéntico", "F", "e", "Nombre de quien imparte el Workshop semanal en vivo del Imperio.", "Fran|Francisco"],
+ ["Imperio Agéntico", "G", "e", "Siglas de la familia de modelos de OpenAI que dan nombre a ChatGPT.", "GPT|ge pe te|yi pi ti"],
+ ["Imperio Agéntico", "G", "e", "Rango al que hay que llegar para conseguir la membresía gratis de por vida.", "Gran Maestro|gran maestro|el gran maestro"],
+ ["Imperio Agéntico", "G", "e", "Nombre del nivel 7, que da acceso a la sesión semestral donde nacen alianzas y negocios.", "General|generales"],
+ ["Imperio Agéntico", "H", "e", "Funciones externas que puede usar un agente, como buscar en internet o enviar un correo.", "herramientas|herramienta|tools"],
+ ["Imperio Agéntico", "H", "e", "Segunda palabra de la plataforma de marketing que se abrevia GHL: Go...", "HighLevel|high level|jailevel"],
+ ["Imperio Agéntico", "H", "e", "Nombre de la llamada en vivo del Imperio que comparte nombre con un saludo.", "Hola"],
+ ["Imperio Agéntico", "I", "e", "Disciplina que crea máquinas capaces de aprender, razonar y resolver problemas.", "inteligencia artificial|IA"],
+ ["Imperio Agéntico", "I", "e", "Nombre con el que se llaman entre sí los miembros de la comunidad.", "imperiales|imperial"],
+ ["Imperio Agéntico", "J", "e", "Nombre de la persona encargada de dar la bienvenida a los nuevos miembros en la llamada semanal Hola.", "Joaco|Joaco Malig|Joaquín|joaquin"],
+ ["Imperio Agéntico", "J", "e", "Competiciones de la comunidad con premios en dinero: los ... imperiales.", "juegos|juegos imperiales"],
+ ["Imperio Agéntico", "K", "c", "Unidad mínima de texto que procesa un modelo de lenguaje.", "token|tokens"],
+ ["Imperio Agéntico", "K", "c", "Plataforma donde se aloja la comunidad.", "Skool|school|escul|skul"],
+ ["Imperio Agéntico", "L", "e", "Siglas en inglés de los grandes modelos de lenguaje.", "LLM|ele ele eme|LLMs"],
+ ["Imperio Agéntico", "L", "e", "Categoría del muro de la comunidad donde los miembros comparten sus avances, ventas y niveles conseguidos.", "logros|logro|los logros"],
+ ["Imperio Agéntico", "M", "e", "Nombre del sistema estrella del Imperio, ya en su versión 3.0: ... Agéntico.", "motor|motor agéntico|motor agentico"],
+ ["Imperio Agéntico", "M", "e", "Tipo de clase de vibe coding que se da cada miércoles en el curso IA en Acción.", "Masterclass|master class|masterclases"],
+ ["Imperio Agéntico", "M", "e", "Siglas del protocolo creado por Anthropic para conectar la IA con herramientas externas.", "MCP|eme ce pe"],
+ ["Imperio Agéntico", "N", "e", "Herramienta de automatización con nodos visuales muy usada en la comunidad.", "n8n|n ocho n|ene ocho ene|nate n"],
+ ["Imperio Agéntico", "N", "e", "Aplicación de notas y documentos que regalan con IA ilimitada durante 6 meses al unirse.", "Notion|nochon|noshon"],
+ ["Imperio Agéntico", "Ñ", "c", "Lo que son OpenAI, Anthropic o Google: una ... tecnológica.", "compañía|compañia|compañías"],
+ ["Imperio Agéntico", "O", "e", "Empresa creadora de ChatGPT.", "OpenAI|open ai|open a i"],
+ ["Imperio Agéntico", "O", "e", "Curso de inicio para armar tu roadmap de 4 semanas: el ... Agéntico.", "OS|OS Agéntico|os agentico|o ese"],
+ ["Imperio Agéntico", "P", "e", "Instrucción o texto que le damos a una IA para que haga una tarea.", "prompt|prompts|promt|prom"],
+ ["Imperio Agéntico", "P", "e", "Lenguaje de programación más usado en inteligencia artificial.", "Python|paiton|piton"],
+ ["Imperio Agéntico", "P", "c", "Nombre del nivel 5 de la comunidad.", "capitán|capitan|capitanes"],
+ ["Imperio Agéntico", "Q", "c", "Acción de encontrar información en internet que muchos agentes pueden hacer por sí solos.", "búsqueda|busqueda|búsquedas|buscar"],
+ ["Imperio Agéntico", "R", "e", "Mascota oficial del Imperio.", "rana|la rana"],
+ ["Imperio Agéntico", "R", "e", "Siglas de la técnica que permite a un modelo responder usando documentos propios que busca antes de contestar.", "RAG|rag|erre a ge"],
+ ["Imperio Agéntico", "R", "e", "Apellido de Rodrigo, profesor del curso de Grok Bot.", "Rojo|Rodrigo Rojo"],
+ ["Imperio Agéntico", "S", "e", "Nombre del nivel 4, que regala una cuenta de GoHighLevel y una mención en YouTube.", "soldado|soldados"],
+ ["Imperio Agéntico", "S", "e", "Nombre de la asistente con IA del curso CRM Omnicanal, que contesta WhatsApp, Instagram, correo y teléfono.", "Sofía|sofia"],
+ ["Imperio Agéntico", "S", "e", "Llamada en vivo del Imperio para resolver dudas técnicas de los miembros.", "soporte|sesión de soporte"],
+ ["Imperio Agéntico", "T", "e", "Matemático británico que propuso un test para saber si una máquina puede pensar.", "Turing|Alan Turing|turin"],
+ ["Imperio Agéntico", "T", "e", "Arquitectura de redes neuronales presentada en 2017 en la que se basan los modelos GPT.", "transformer|transformers"],
+ ["Imperio Agéntico", "T", "c", "Nombre misterioso del nivel 9, el más alto de la comunidad.", "Æternum|aeternum|eternum|eterno"],
+ ["Imperio Agéntico", "U", "c", "Nombre del nivel 3 de la comunidad.", "recluta|reclutas"],
+ ["Imperio Agéntico", "V", "e", "Forma de programar describiendo a una IA lo que quieres, sin escribir el código tú mismo.", "vibe coding|vaib coding|vaibcoding|vibe"],
+ ["Imperio Agéntico", "V", "e", "Tipo de agentes de uno de los cursos nuevos del Imperio: Agentes de ...", "voz|agentes de voz"],
+ ["Imperio Agéntico", "W", "e", "Aplicación de mensajería del curso de agentes con instalación en 1 clic.", "WhatsApp|guasap|wasap|whatsap"],
+ ["Imperio Agéntico", "W", "e", "Tipo de sesión práctica en vivo que imparte Fran cada semana.", "workshop|guorshop|taller"],
+ ["Imperio Agéntico", "X", "c", "Cantidad de texto que un modelo puede tener en cuenta a la vez: ventana de ...", "contexto|ventana de contexto"],
+ ["Imperio Agéntico", "X", "e", "Empresa de Elon Musk creadora del modelo Grok.", "xAI|equis ai|equis a i|x ai"],
+ ["Imperio Agéntico", "Y", "c", "Pequeñas y medianas empresas, uno de los perfiles de miembros del Imperio.", "pymes|pyme"],
+ ["Imperio Agéntico", "Z", "c", "Lo que hacen n8n y los agentes con las tareas repetitivas: quitárnoslas de encima.", "automatización|automatizacion|automatizaciones|automatizar"],
+ ["Imperio Agéntico", "Z", "c", "Capacidad de un modelo para resolver problemas pensando paso a paso.", "razonamiento|razonar"]
+];
+/* Versión 1 de las preguntas de ejemplo (tema, letra, pregunta). Sirve para actualizar sin tocar lo que el administrador haya editado. */
+const SEED_V1 = [["Deporte", "A", "Conjunto de disciplinas deportivas que incluye carreras, saltos y lanzamientos."], ["Deporte", "B", "Deporte de equipo en el que hay que meter el balón en una canasta."], ["Deporte", "C", "Deporte que se practica sobre una bicicleta."], ["Deporte", "D", "Prueba de atletismo formada por diez pruebas distintas."], ["Deporte", "E", "Deporte de combate en el que se usa una espada, un florete o un sable."], ["Deporte", "F", "Deporte de equipo en el que se juega con los pies y gana quien mete más goles."], ["Deporte", "G", "Deporte que se practica con aparatos como la barra, las anillas o el potro."], ["Deporte", "H", "Deporte que se juega con un stick y una bola, sobre hierba, hielo o patines."], ["Deporte", "I", "Objeto que se pasan los corredores en una carrera de relevos."], ["Deporte", "J", "Arte marcial japonesa cuyo nombre significa 'camino suave'."], ["Deporte", "K", "Arte marcial japonesa de golpes, con cinturones de colores y katas."], ["Deporte", "L", "Prueba de atletismo en la que se arroja un disco, un martillo, un peso o una jabalina."], ["Deporte", "M", "Carrera de 42,195 kilómetros."], ["Deporte", "N", "Deporte que se practica en el agua con estilos como el crol o la braza."], ["Deporte", "Ñ", "Actividad deportiva que consiste en subir montañas."], ["Deporte", "O", "Competición deportiva internacional que se celebra cada cuatro años y cuyo símbolo son cinco aros."], ["Deporte", "P", "Deporte de raqueta que se juega en una pista con paredes, muy popular en España."], ["Deporte", "Q", "Deporte de invierno en el que te deslizas por la nieve con dos tablas."], ["Deporte", "R", "En el fútbol, acción de esquivar a un rival llevando el balón."], ["Deporte", "S", "Deporte que consiste en deslizarse sobre las olas con una tabla."], ["Deporte", "T", "Deporte de raqueta con red que se juega en pistas de tierra batida, hierba o cemento."], ["Deporte", "U", "Lucha tradicional japonesa entre luchadores muy pesados."], ["Deporte", "V", "Deporte en el que dos equipos golpean el balón con las manos por encima de una red."], ["Deporte", "W", "Deporte acuático que se practica sobre una tabla con vela."], ["Deporte", "X", "Deporte de combate con guantes que se practica en un ring."], ["Deporte", "Y", "Deporte de equipo que se juega con un balón ovalado."], ["Deporte", "Z", "Capacidad física básica que permite vencer una resistencia."], ["Cuerpo humano", "A", "Vaso sanguíneo que lleva la sangre desde el corazón al resto del cuerpo."], ["Cuerpo humano", "B", "Músculo del brazo que tiene dos cabezas."], ["Cuerpo humano", "C", "Órgano que bombea la sangre por todo el cuerpo."], ["Cuerpo humano", "D", "Músculo principal de la respiración, situado debajo de los pulmones."], ["Cuerpo humano", "E", "Órgano en forma de bolsa donde se digieren los alimentos después del esófago."], ["Cuerpo humano", "F", "Hueso más largo del cuerpo humano."], ["Cuerpo humano", "G", "Órganos que fabrican sustancias como las hormonas, la saliva o el sudor."], ["Cuerpo humano", "H", "Órgano grande del abdomen que produce la bilis."], ["Cuerpo humano", "I", "Órgano largo y enrollado donde se absorben los nutrientes."], ["Cuerpo humano", "J", "Órgano de la vista."], ["Cuerpo humano", "K", "Unidad con la que se mide la energía que aportan los alimentos."], ["Cuerpo humano", "L", "Órgano de la boca con el que notamos los sabores."], ["Cuerpo humano", "M", "Órgano que se contrae para que podamos movernos."], ["Cuerpo humano", "N", "Órgano del olfato."], ["Cuerpo humano", "Ñ", "Órganos que filtran la sangre y fabrican la orina."], ["Cuerpo humano", "O", "Órgano del sentido de la audición."], ["Cuerpo humano", "P", "Órganos donde el oxígeno del aire pasa a la sangre."], ["Cuerpo humano", "Q", "Tubo que lleva el aire desde la laringe hasta los bronquios."], ["Cuerpo humano", "R", "Articulación que une el muslo con la pierna."], ["Cuerpo humano", "S", "Líquido rojo que recorre el cuerpo por venas y arterias."], ["Cuerpo humano", "T", "Estructura que une un músculo con un hueso."], ["Cuerpo humano", "U", "Parte dura que protege la punta de los dedos."], ["Cuerpo humano", "V", "Vasos sanguíneos que devuelven la sangre al corazón."], ["Cuerpo humano", "X", "Gas del aire que necesitan todas nuestras células."], ["Cuerpo humano", "Z", "Parte del cuerpo donde se encuentra el cerebro."], ["Respiración", "A", "Pequeños sacos en los pulmones donde se produce el intercambio de gases con la sangre."], ["Respiración", "B", "Siglas del test en reposo que mide en segundos el tiempo hasta sentir el primer deseo distintivo de respirar tras una exhalación normal."], ["Respiración", "C", "Estructuras internas de la nariz encargadas de calentar, humedecer, filtrar y ralentizar el aire que inhalamos."], ["Respiración", "D", "Gas considerado desecho que es clave para la respiración."], ["Respiración", "E", "Hormona segregada por los riñones que estimula la producción de glóbulos rojos cuando entrenamos con apneas simulando altitud."], ["Respiración", "F", "Número de respiraciones que realizamos en un minuto."], ["Respiración", "G", "Células sanguíneas encargadas de transportar el oxígeno y que el bazo libera a la circulación durante las apneas intensas."], ["Respiración", "H", "Exceso de ventilación pulmonar que elimina demasiado dióxido de carbono y reduce la oxigenación celular."], ["Respiración", "I", "Músculos situados entre las costillas que colaboran en la expansión tridimensional de la caja torácica."], ["Respiración", "I", "Trastorno del sueño que podemos combatir activando el sistema nervioso parasimpático mediante ejercicios de respiración."], ["Respiración", "J", "Respiración rápida, ruidosa y superficial por la boca que debemos evitar tras romper una apnea en nuestros entrenamientos."], ["Respiración", "K", "Médico ucraniano pionero en investigar los peligros de la hiperventilación crónica y creador del método en el que se inspiró Patrick McKeown."], ["Respiración", "L", "Órgano muscular que en reposo debe descansar pegado al paladar para garantizar el sellado labial y la respiración nasal."], ["Respiración", "M", "Cinta adhesiva diseñada específicamente para rodear los labios y garantizar la respiración nasal durante el sueño."], ["Respiración", "N", "Personaje de cómic que enseña cómo mejorar tu respiración."], ["Respiración", "Ñ", "Momento del día ideal para medir nuestro test BOLT en condiciones de reposo."], ["Respiración", "O", "Gas vasodilatador, broncodilatador y antibacteriano que se produce en los senos paranasales y se potencia con el ejercicio de humming."], ["Respiración", "P", "Rama del sistema nervioso autónomo encargada del descanso, la recuperación y la digestión, que activamos con exhalaciones lentas."], ["Respiración", "Q", "Receptores nerviosos del tronco encefálico y las arterias que detectan el aumento de dióxido de carbono y envían la señal de respirar."], ["Respiración", "R", "Ruido respiratorio nocturno causado principalmente por la vibración de los tejidos de la garganta al dormir con la boca abierta."], ["Respiración", "S", "Ejercicio de reseteo rápido para el estrés que consiste en una doble inhalación nasal seguida de una exhalación larga y lenta por la boca."], ["Respiración", "T", "Capacidad de nuestro cuerpo y nuestros quimiorreceptores para soportar niveles más altos de dióxido de carbono sin entrar en pánico ni jadear."], ["Respiración", "U", "Punto o límite fisiológico, como el aeróbico o el de lactato, que logramos retrasar cuando entrenamos la respiración funcional."], ["Respiración", "V", "Nervio craneal más largo del cuerpo, clave del sistema parasimpático, que estimulamos mediante la respiración diafragmática y lenta."], ["Respiración", "W", "Nombre del creador del famoso método holandés que utiliza hiperventilaciones y frío, técnica que siempre filtramos bajo estrictas reglas de seguridad."], ["Respiración", "X", "Estado de disminución de oxígeno en la sangre y los tejidos que provocamos de forma controlada e intermitente en las apneas largas."], ["Respiración", "Y", "Disciplina milenaria de la que provienen técnicas como el pranayama o bhastrika, que adaptamos con base científica."], ["Respiración", "Z", "Corredor legendario pionero en experimentar el entrenamiento con pausas respiratorias."]];
+const SEED_VERSION = 2;
+const SEED_TEMAS=[...new Set(SEED.map(r=>r[0]))];
+function seedQuestions(){return SEED.map(r=>({id:uid(),tema:r[0],letra:r[1],tipo:r[2]==="c"?"contiene":"empieza",pregunta:r[3],respuestas:r[4]}))}
+
+let preguntas = load(KEY.q,null) || seedQuestions();
+/* Añade temáticas de ejemplo nuevas a navegadores que ya tenían preguntas guardadas (una sola vez por temática) */
+(function upgradeSeeds(){
+  const sembrados=load("rosco.temasSembrados",null)||[];
+  const version=load("rosco.seedVersion",load(KEY.q,null)&&sembrados.length?1:0);
+  if(version>=SEED_VERSION) return;
+  if(!load(KEY.q,null)){ save(KEY.q,preguntas); save("rosco.temasSembrados",SEED_TEMAS); save("rosco.seedVersion",SEED_VERSION); return }
+  const antes=new Set(preguntas.map(p=>p.tema));
+  /* 1. Quita las preguntas de ejemplo antiguas que no se hayan editado */
+  const v1=new Set(SEED_V1.map(r=>norm(r[0])+"|"+r[1]+"|"+norm(r[2])));
+  let lista=preguntas.filter(p=>!v1.has(norm(p.tema)+"|"+p.letra+"|"+norm(p.pregunta)));
+  /* 2. Añade las nuevas que no estén repetidas, salvo en temáticas que el administrador borró a propósito */
+  const resp=q=>new Set(String(q.respuestas).split("|").map(norm).filter(Boolean));
+  const igual=(a,b)=>norm(a.tema)===norm(b.tema)&&(norm(a.pregunta)===norm(b.pregunta)||(a.letra===b.letra&&[...resp(a)].some(r=>resp(b).has(r))));
+  const borradas=new Set(sembrados.filter(t=>!antes.has(t)));
+  for(const q of seedQuestions()){ if(borradas.has(q.tema)) continue; if(!lista.some(x=>igual(q,x))) lista.push(q) }
+  preguntas=lista; save(KEY.q,preguntas);
+  save("rosco.temasSembrados",[...new Set(sembrados.concat(SEED_TEMAS))]); save("rosco.seedVersion",SEED_VERSION);
+})();
+let scores = load(KEY.s,[]);
+let adminCfg = load(KEY.a,{pin:"1234"});
+let adminIn = false;
+const savePreg = ()=>save(KEY.q,preguntas);
+/* Etiquetas por categoría: {"Respiración":{etiquetas:["Salud"]}} */
+let catMeta = load(KEY_CAT,{});
+(function seedTags(){let ch=false;for(const t in SEED_TAGS){if(!catMeta[t]&&preguntas.some(p=>p.tema===t)){catMeta[t]={etiquetas:SEED_TAGS[t].slice()};ch=true}} if(ch) save(KEY_CAT,catMeta)})();
+const saveCats = ()=>save(KEY_CAT,catMeta);
+const tagsOf = t=>(catMeta[t]&&catMeta[t].etiquetas)||[];
+function allTags(list){const s=new Set();(list||temas()).forEach(t=>tagsOf(t).forEach(g=>s.add(g)));return [...s].sort((a,b)=>a.localeCompare(b,"es"))}
+/* Categorías ocultas: no salen en la pantalla principal, solo se juegan con un enlace compartido */
+const isHidden=t=>!!(catMeta[t]&&catMeta[t].oculta);
+function temasVisibles(){return temas().filter(t=>!isHidden(t))}
+function setMeta(t,patch){catMeta[t]=Object.assign({etiquetas:[]},catMeta[t]||{},patch);saveCats()}
+function parseTags(s){const out=[];String(s).split(",").map(x=>x.trim()).filter(Boolean).forEach(x=>{if(!out.some(y=>norm(y)===norm(x))) out.push(x)});return out}
+const temas = ()=>[...new Set(preguntas.map(p=>p.tema))].sort((a,b)=>a.localeCompare(b,"es"));
+
+/* ---------- Normalización y corrección ---------- */
+function norm(s){
+  return String(s).toLowerCase()
+    .replace(/[áàâä]/g,"a").replace(/[éèêë]/g,"e").replace(/[íìîï]/g,"i").replace(/[óòôö]/g,"o").replace(/[úùûü]/g,"u")
+    .replace(/[^a-zñ0-9 ]/g," ").replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  if(a===b) return 0; if(!a.length) return b.length; if(!b.length) return a.length;
+  let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1))}prev=cur}
+  return prev[b.length];
+}
+const RELLENO = new Set(["es","la","el","los","las","un","una","unos","unas","respuesta","creo","que","pues","eh","em","mm","vale","se","llama","son"]);
+function isPass(t){const n=norm(t);return n.includes("pasapalabra")||n.includes("pasa palabra")||n.includes("pasar palabra")||/^(pasa|paso|siguiente|pasapalabras)$/.test(n)}
+function isCorrect(t,respuestas){
+  const n=norm(t); if(!n) return false;
+  const words=n.split(" ").filter(w=>!RELLENO.has(w)); const core=words.join(" ");
+  for(const raw of String(respuestas).split("|")){
+    const a=norm(raw); if(!a) continue;
+    if(core===a||(" "+n+" ").includes(" "+a+" ")) return true;
+    const tol=a.length>=9?2:a.length>=5?1:0;
+    if(lev(core,a)<=tol) return true;
+    if(!a.includes(" ")) for(const w of words) if(lev(w,a)<=tol) return true;
+  }
+  return false;
+}
+function checkLetter(q){
+  const L=norm(q.letra)||q.letra.toLowerCase(); const first=norm(q.respuestas.split("|")[0]);
+  if(q.tipo==="empieza"&&!first.startsWith(L)) return `La respuesta "${q.respuestas.split("|")[0].trim()}" no empieza por ${q.letra}. ¿Querías "Contiene la"?`;
+  if(q.tipo==="contiene"&&!first.includes(L)) return `La respuesta "${q.respuestas.split("|")[0].trim()}" no contiene la ${q.letra}.`;
+  return "";
+}
+
+/* ---------- Navegación ---------- */
+const VIEWS=["setup","game","result","scores","admin","waitlist"];
+function show(v){
+  VIEWS.forEach(x=>$("#v-"+x).hidden=x!==v);
+  document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current",String(b.dataset.view===v||(v==="result"&&b.dataset.view==="setup")||(v==="game"&&b.dataset.view==="setup"))));
+  if(v==="setup") fillSetup();
+  if(v==="scores") renderScores();
+  if(v==="admin") renderAdmin();
+  if(v==="waitlist") renderWaitlist();
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("#nav button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
+function lockNav(on){document.querySelectorAll("#nav button").forEach(b=>b.disabled=on)}
+
+/* ---------- Entorno ---------- */
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+function envWarnings(){
+  const w=[];
+  const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  if(navigator.brave) w.push("Brave no permite reconocer la voz. Para responder hablando usa Chrome. Aquí podrás responder escribiendo o en modo árbitro.");
+  else if(!SR) w.push("Este navegador no reconoce la voz. Usa Chrome o Edge para responder hablando. Aquí podrás responder escribiendo o en modo árbitro.");
+  else if(isIOS) w.push("En iPhone y iPad, para responder hablando tiene que estar activado el Dictado (Ajustes › General › Teclado › Activar Dictado). Si no te entiende, usa los botones de árbitro.");
+  if(!window.isSecureContext) w.push("Para usar cámara y micrófono abre la app desde una dirección https (o el archivo directamente en Chrome).");
+  if(!("speechSynthesis" in window)) w.push("Este navegador no tiene voz en off: las preguntas solo se mostrarán en pantalla.");
+  $("#envWarn").innerHTML=w.map(x=>`<p class="warn">${esc(x)}</p>`).join("");
+}
+
+/* ---------- Voz en off ---------- */
+/* Voz única: "Google español" (es-ES). Si el navegador no la tiene (Edge, Safari, móviles), usa la voz es-ES del sistema. */
+let voz=null;
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  const vs=speechSynthesis.getVoices();
+  voz=vs.find(v=>v.name==="Google español")||vs.find(v=>/google/i.test(v.name)&&v.lang==="es-ES")||vs.find(v=>v.lang==="es-ES")||vs.find(v=>/^es/i.test(v.lang))||null;
+}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.addEventListener?.("voiceschanged",loadVoices)}
+/* Las voces de Google en Chrome se cortan si una frase dura más de ~15 s: se lee por trozos cortos */
+function trozos(text){
+  const out=[];
+  (String(text).match(/[^.!?:;]+[.!?:;]*\s*/g)||[]).map(s=>s.trim()).forEach(s=>{
+    if(s.length<=160){ if(s) out.push(s); return }
+    let cur="";
+    (s.match(/[^,]+,?\s*/g)||[]).map(p=>p.trim()).forEach(p=>{ if((cur+" "+p).length>160&&cur){out.push(cur);cur=p} else cur=cur?cur+" "+p:p });
+    if(cur) out.push(cur);
+  });
+  return out.length?out:[String(text)];
+}
+let speakT=0, speakTok=0;
+function speak(text,cb){
+  clearTimeout(speakT);
+  const tok=++speakTok;
+  if(!("speechSynthesis" in window)){ if(cb) speakT=setTimeout(cb,300); return }
+  speechSynthesis.cancel(); if(!voz) loadVoices();
+  const parts=trozos(text); let i=0;
+  const step=()=>{
+    if(tok!==speakTok) return;
+    if(i>=parts.length){ cb&&cb(); return }
+    const t=parts[i++]; const u=new SpeechSynthesisUtterance(t); u.lang="es-ES"; if(voz) u.voice=voz; u.rate=1;
+    let done=false; const fin=()=>{if(done) return; done=true; clearTimeout(speakT); step()};
+    u.onend=fin; u.onerror=fin;
+    clearTimeout(speakT); speakT=setTimeout(fin,2500+t.length*90);
+    speechSynthesis.speak(u);
+  };
+  step();
+}
+
+/* ---------- Cámara / micro ---------- */
+let stream=null;
+function stopStream(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+async function enableMedia(){
+  if(!navigator.mediaDevices?.getUserMedia){$("#permStatus").textContent="Este navegador no permite usar cámara y micrófono.";return false}
+  const wantCam=$("#pCam").checked;
+  try{
+    stopStream();
+    /* Solo al grabar: sin cancelación de eco ni supresión de ruido, para que la voz en off de los altavoces entre en el vídeo.
+       Sin grabar: ajustes normales del micro, que son los que mejor van con el reconocimiento de voz. */
+    /* El micro solo se abre aquí si se va a grabar. Si no, lo deja libre para el reconocimiento de voz
+       (en Android el micrófono no se puede usar en dos sitios a la vez). */
+    const raw=$("#pRec").checked;
+    if(!wantCam&&!raw){ $("#permStatus").innerHTML='<span class="ok">No hace falta activar nada: el micrófono se pedirá al empezar a responder.</span>'; return true }
+    stream=await navigator.mediaDevices.getUserMedia({audio:raw?{echoCancellation:false,noiseSuppression:false,autoGainControl:true}:false,video:wantCam?{facingMode:"user",width:{ideal:1280},height:{ideal:720}}:false});
+    $("#prevVideo").srcObject=stream; $("#camVideo").srcObject=stream;
+    $("#permStatus").innerHTML=`<span class="ok">Permisos concedidos: ${[wantCam?"cámara":"",raw?"micrófono para grabar":""].filter(Boolean).join(" y ")}.</span>`;
+    return true;
+  }catch(e){
+    const m={NotAllowedError:"Has denegado el permiso. Actívalo desde el candado de la barra de direcciones y vuelve a intentarlo.",NotFoundError:"No se ha encontrado cámara o micrófono en este equipo.",NotReadableError:"La cámara o el micro están ocupados por otra aplicación."}[e.name]||("No se ha podido activar: "+e.message);
+    $("#permStatus").textContent=m; return false;
+  }
+}
+$("#btnPerm").addEventListener("click",enableMedia);
+$("#pCam").addEventListener("change",()=>{ if(stream) enableMedia() });
+$("#pRec").addEventListener("change",()=>{ $("#androidRecNote").hidden=!(IS_ANDROID&&$("#pRec").checked); if(stream) enableMedia() });
+/* Arranca el reconocimiento. Si estamos grabando, le pasamos la pista del micro que ya está abierta
+   (Chrome reciente lo admite; las versiones antiguas ignoran el parámetro y abren el micro por su cuenta). */
+function srStart(r){
+  const t=stream&&$("#pRec").checked?stream.getAudioTracks()[0]:null;
+  if(t&&t.readyState==="live"){ try{ r.start(t); return }catch(e){} }
+  r.start();
+}
+const SR_ERR={"not-allowed":"El navegador no deja usar el micrófono para reconocer voz (permiso denegado).","service-not-allowed":"El servicio de reconocimiento de voz está bloqueado en este navegador.","audio-capture":"El reconocimiento no puede abrir el micrófono: puede que otra parte de la app o del equipo lo esté usando.","network":"El reconocimiento de voz necesita internet y no hay conexión.","no-speech":"No se ha oído nada. Habla más cerca del micro o sube su volumen en el sistema.","aborted":"Se ha cortado la escucha.","language-not-supported":"El reconocimiento no admite español en este navegador."};
+$("#btnMicTest").addEventListener("click",async()=>{
+  const out=$("#micTest");
+  if(!SR){out.textContent="Este navegador no tiene reconocimiento de voz. Usa Chrome o Edge.";return}
+  if(($("#pRec").checked||$("#pCam").checked)&&!stream) await enableMedia();
+  const r=new SR(); r.lang="es-ES"; r.interimResults=true; r.continuous=false;
+  out.textContent="Escuchando… di una palabra, por ejemplo «diafragma».";
+  let got=false;
+  r.onresult=e=>{const res=e.results[e.results.length-1]; out.textContent=(res.isFinal?"✓ He oído: ":"… ")+res[0].transcript; if(res.isFinal) got=true};
+  r.onerror=e=>{got=true; out.textContent="✗ "+(SR_ERR[e.error]||("Error: "+e.error))};
+  r.onend=()=>{ if(!got) out.textContent="✗ La escucha terminó sin oír nada. Revisa qué micrófono usa Chrome (icono del candado → Micrófono)." };
+  try{srStart(r)}catch(e){out.textContent="✗ No se ha podido iniciar: "+e.message}
+});
+
+/* ---------- Grabación (lienzo con rosco + cámara + audio del micro) ---------- */
+let audioCtx=null;
+let recorder=null, chunks=[], drawOn=false, canvas=null, ctx=null, recUrl=null, recExt="webm";
+function pickMime(){
+  if(!window.MediaRecorder) return "";
+  for(const m of ["video/mp4;codecs=avc1,mp4a","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm","video/mp4"]) if(MediaRecorder.isTypeSupported(m)) return m;
+  return "";
+}
+function startRecording(){
+  if(!stream||!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador no puede grabar: se juega sin grabar");return}
+  canvas=document.createElement("canvas"); canvas.width=720; canvas.height=900; ctx=canvas.getContext("2d");
+  drawOn=true; drawLoop();
+  const out=canvas.captureStream(30);
+  /* Compresor + ganancia: sube lo que llega flojo (la voz en off por los altavoces) sin que tu voz sature */
+  let audioTracks=stream.getAudioTracks();
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(AC&&audioTracks.length){
+      audioCtx=new AC(); audioCtx.resume&&audioCtx.resume();
+      const src=audioCtx.createMediaStreamSource(new MediaStream(audioTracks));
+      const pre=audioCtx.createGain(); pre.gain.value=2.2;
+      const comp=audioCtx.createDynamicsCompressor();
+      comp.threshold.value=-38; comp.knee.value=18; comp.ratio.value=8; comp.attack.value=0.004; comp.release.value=0.25;
+      const post=audioCtx.createGain(); post.gain.value=2.6;
+      const dest=audioCtx.createMediaStreamDestination();
+      src.connect(pre); pre.connect(comp); comp.connect(post); post.connect(dest);
+      if(audioCtx.state!=="closed"&&dest.stream.getAudioTracks().length) audioTracks=dest.stream.getAudioTracks();
+    }
+  }catch(e){ audioTracks=stream.getAudioTracks() }
+  audioTracks.forEach(t=>out.addTrack(t));
+  const mime=pickMime(); recExt=mime.includes("mp4")?"mp4":"webm";
+  try{recorder=new MediaRecorder(out,mime?{mimeType:mime,videoBitsPerSecond:3_000_000}:undefined)}catch(e){recorder=new MediaRecorder(out)}
+  chunks=[];
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size) chunks.push(e.data)};
+  recorder.onstop=()=>{
+    drawOn=false;
+    if(audioCtx){try{audioCtx.close()}catch(e){} audioCtx=null}
+    const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+    if(recUrl) URL.revokeObjectURL(recUrl);
+    recUrl=URL.createObjectURL(blob);
+    const v=$("#rVideo"); v.src=recUrl; v.hidden=false;
+    const a=$("#rDownload"); a.href=recUrl; a.download=`enroscados-${(game?.jugador||"jugador").replace(/\W+/g,"-")}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.${recExt}`; a.hidden=false;
+    $("#rVideoMsg").textContent=`Vídeo listo (${(blob.size/1048576).toFixed(1)} MB). La voz en off se graba a través del micrófono: usa altavoces, no auriculares.`;
+  };
+  recorder.start(1000);
+  $("#recBadge").hidden=false;
+}
+function stopRecording(){ $("#recBadge").hidden=true; if(recorder&&recorder.state!=="inactive") recorder.stop() }
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+let PAL=null;
+function readPal(){PAL={night:cssVar("--night"),panel:cssVar("--panel"),line:cssVar("--line"),cam1:cssVar("--cam1"),cam2:cssVar("--cam2"),ink:cssVar("--ink"),col:{pendiente:cssVar("--blue"),acierto:cssVar("--green"),fallo:cssVar("--red"),vacio:cssVar("--grey")}}}
+function wrap(c,text,x,y,maxW,lh,maxLines){
+  const words=text.split(" "); let line="", lines=[];
+  for(const w of words){const t=line?line+" "+w:w; if(c.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t}
+  if(line) lines.push(line);
+  if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]+="…"}
+  lines.forEach((l,i)=>c.fillText(l,x,y+i*lh));
+}
+function drawLoop(){
+  if(!drawOn) return;
+  const c=ctx, W=720, cx=360, cy=360; if(!PAL) readPal();
+  c.fillStyle=PAL.night; c.fillRect(0,0,W,900);
+  const g=c.createRadialGradient(cx,cy,50,cx,cy,360); g.addColorStop(0,PAL.cam1); g.addColorStop(1,PAL.night); c.fillStyle=g; c.fillRect(0,0,W,720);
+  const vid=$("#camVideo"), R=245;
+  c.save(); c.beginPath(); c.arc(cx,cy,R,0,Math.PI*2); c.clip();
+  c.fillStyle=PAL.cam2; c.fillRect(cx-R,cy-R,R*2,R*2);
+  if(vid.videoWidth&&$("#pCam").checked){
+    const s=Math.max(2*R/vid.videoWidth,2*R/vid.videoHeight), dw=vid.videoWidth*s, dh=vid.videoHeight*s;
+    c.translate(cx,cy); c.scale(-1,1); c.drawImage(vid,-dw/2,-dh/2,dw,dh);
+  }
+  c.restore();
+  c.lineWidth=5; c.strokeStyle=PAL.line; c.beginPath(); c.arc(cx,cy,R,0,Math.PI*2); c.stroke();
+  if(game){
+    const n=game.items.length;
+    game.items.forEach((it,i)=>{
+      const a=-Math.PI/2+i*2*Math.PI/n, x=cx+318*Math.cos(a), y=cy+318*Math.sin(a), cur=i===game.idx&&game.running, r=cur?31:25;
+      c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fillStyle=PAL.col[it.estado]; c.fill();
+      c.lineWidth=cur?5:2; c.strokeStyle=cur?"#ffc72e":"rgba(255,255,255,.4)"; c.stroke();
+      c.fillStyle=it.estado==="vacio"?"rgba(255,255,255,.4)":"#fff"; c.font=`800 ${cur?30:24}px "Bricolage Grotesque", sans-serif`; c.textAlign="center"; c.textBaseline="middle"; c.fillText(it.letra,x,y+1);
+    });
+    c.textBaseline="alphabetic"; c.textAlign="left"; c.font='800 30px "Bricolage Grotesque", sans-serif';
+    c.fillStyle="#16a85a"; c.beginPath(); c.arc(46,46,32,0,Math.PI*2); c.fill(); c.fillStyle="#fff"; c.textAlign="center"; c.fillText(game.ok(),46,57);
+    c.fillStyle="#dd3b35"; c.beginPath(); c.arc(W-46,46,32,0,Math.PI*2); c.fill(); c.fillStyle="#fff"; c.fillText(game.ko(),W-46,57);
+    c.fillStyle="#ffc72e"; c.font='800 28px "Bricolage Grotesque", sans-serif'; c.fillText(timeText(),W-60,700);
+    c.fillStyle=PAL.panel; c.fillRect(0,720,W,180); c.fillStyle="#ffc72e"; c.fillRect(0,720,W,5);
+    const it=game.items[game.idx];
+    if(it&&it.q&&game.running){
+      c.textAlign="left"; c.fillStyle="#ffc72e"; c.font='800 26px "Bricolage Grotesque", sans-serif';
+      c.fillText((it.q.tipo==="contiene"?"CONTIENE LA ":"EMPIEZA POR ")+it.letra,28,766);
+      c.fillStyle=PAL.ink; c.font='700 26px "Atkinson Hyperlegible", sans-serif'; wrap(c,it.q.pregunta,28,806,W-56,32,3);
+    }else{
+      c.textAlign="center"; c.fillStyle=PAL.ink; c.font='800 34px "Bricolage Grotesque", sans-serif';
+      c.fillText(`${game.ok()} aciertos · ${game.ko()} fallos`,cx,820);
+    }
+  }
+  requestAnimationFrame(drawLoop);
+}
+
+/* ---------- Juego ---------- */
+let game=null, tickI=0, rec=null, listenTok=0, voiceOff=false, silentStreak=0;
+const IS_ANDROID=/Android/i.test(navigator.userAgent);
+const recUsesMic=()=>!!(stream&&stream.getAudioTracks().some(t=>t.readyState==="live"));
+/* ---------- Selector de categorías (casillas, buscador, etiquetas) ---------- */
+let selCats=new Set(load("rosco.seleccion",null)||temasVisibles());
+let activeTag="";
+function saveSel(){save("rosco.seleccion",[...selCats])}
+function catItem(t){
+  const n=preguntas.filter(p=>p.tema===t).length;
+  return `<label class="cat"><input type="checkbox" data-cat="${esc(t)}"${selCats.has(t)?" checked":""}><span class="catname">${esc(t)} <small>${n} ${n===1?"pregunta":"preguntas"}</small></span><span class="tags">${tagsOf(t).map(g=>`<span class="tagchip">${esc(g)}</span>`).join("")}</span></label>`;
+}
+function renderCats(){
+  const all=temasVisibles(); selCats=new Set([...selCats].filter(t=>all.includes(t)));
+  const tags=allTags(all); if(activeTag&&!tags.includes(activeTag)) activeTag="";
+  $("#tagBar").innerHTML=tags.length?[`<button type="button" class="tagbtn" data-tag="" aria-pressed="${!activeTag}">Todas las etiquetas</button>`].concat(tags.map(g=>`<button type="button" class="tagbtn" data-tag="${esc(g)}" aria-pressed="${activeTag===g}">${esc(g)}</button>`)).join(""):"";
+  const q=norm($("#catSearch").value);
+  const vis=all.filter(t=>(!activeTag||tagsOf(t).includes(activeTag))&&(!q||norm(t).includes(q)||tagsOf(t).some(g=>norm(g).includes(q))));
+  let html="";
+  if(!all.length) html=`<p class="note" style="margin:8px">No hay categorías disponibles. Pide a tu profesor el enlace del rosco.</p>`;
+  else if(!vis.length) html=`<p class="note" style="margin:8px">Ninguna categoría coincide con la búsqueda.</p>`;
+  else if($("#catGroup").checked){
+    const groups=(activeTag?[activeTag]:tags).map(g=>[g,vis.filter(t=>tagsOf(t).includes(g))]).filter(x=>x[1].length);
+    const sin=vis.filter(t=>!tagsOf(t).length); if(sin.length) groups.push(["Sin etiqueta",sin]);
+    html=groups.map(([g,ts])=>{const allOn=ts.every(t=>selCats.has(t));return `<div class="group"><div class="grouphead"><b>${esc(g)}</b><button type="button" class="btn small" data-grp="${esc(g)}" data-on="${allOn?0:1}">${allOn?"Quitar grupo":"Marcar grupo"}</button></div>${ts.map(catItem).join("")}</div>`}).join("");
+  } else html=vis.map(catItem).join("");
+  $("#catList").innerHTML=html;
+  const ca=$("#catAll"); ca.checked=all.length>0&&selCats.size===all.length; ca.indeterminate=selCats.size>0&&selCats.size<all.length;
+  const pool=preguntas.filter(p=>selCats.has(p.tema)); const letras=new Set(pool.map(p=>p.letra));
+  $("#catSum").textContent=selCats.size?`${selCats.size} ${selCats.size===1?"categoría":"categorías"} · ${pool.length} preguntas · ${letras.size} de 27 letras con pregunta`:"Marca al menos una categoría para jugar.";
+}
+$("#catSearch").addEventListener("input",renderCats);
+$("#catGroup").addEventListener("change",()=>{save("rosco.agrupar",$("#catGroup").checked);renderCats()});
+$("#catAll").addEventListener("change",e=>{selCats=e.target.checked?new Set(temasVisibles()):new Set();saveSel();renderCats()});
+$("#tagBar").addEventListener("click",e=>{const b=e.target.closest("[data-tag]");if(!b) return;activeTag=b.dataset.tag;renderCats()});
+$("#catList").addEventListener("change",e=>{const c=e.target.closest("[data-cat]");if(!c) return;c.checked?selCats.add(c.dataset.cat):selCats.delete(c.dataset.cat);saveSel();renderCats()});
+$("#catList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-grp]"); if(!b) return;
+  const g=b.dataset.grp, on=b.dataset.on==="1", vis=[...$("#catList").querySelectorAll(".group")].find(d=>d.querySelector("[data-grp]")===b);
+  vis.querySelectorAll("[data-cat]").forEach(c=>on?selCats.add(c.dataset.cat):selCats.delete(c.dataset.cat));
+  saveSel(); renderCats();
+});
+$("#catGroup").checked=!!load("rosco.agrupar",false);
+function catsLabel(cs){
+  if(cs.length===temasVisibles().length&&cs.length>1) return "Todas";
+  if(cs.length<=2) return cs.join(" + ");
+  return `${cs.slice(0,2).join(" + ")} y ${cs.length-2} más`;
+}
+function fillSetup(){
+  envWarnings();
+  $("#sharedBox").hidden=!shared; $("#catField").hidden=!!shared;
+  if(shared) $("#sharedName").textContent=`${shared.nombre} · ${shared.preguntas.length} ${shared.preguntas.length===1?"pregunta":"preguntas"}`;
+  renderCats();
+  const n=load("rosco.ultimoJugador",""); if(n&&!$("#pName").value) $("#pName").value=n;
+}
+document.querySelectorAll('input[name="pModo"]').forEach(r=>r.addEventListener("change",()=>$("#segBox").hidden=!$("#pModoTiempo").checked));
+function fmt(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function timeText(){return game.conTiempo?fmt(game.total-game.usado):fmt(game.usado)}
+
+$("#btnStart").addEventListener("click",async()=>{
+  const cats=shared?[shared.nombre]:temasVisibles().filter(t=>selCats.has(t)), jugador=$("#pName").value.trim()||"Jugador";
+  if(!cats.length){toast("Marca al menos una categoría");return}
+  save("rosco.ultimoJugador",jugador);
+  const fuente=shared?shared.preguntas:preguntas.filter(p=>cats.includes(p.tema));
+  const items=LETRAS.map(letra=>{
+    const pool=fuente.filter(p=>p.letra===letra);
+    const q=pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+    return {letra,q,estado:q?"pendiente":"vacio",dicho:""};
+  });
+  if(!items.some(i=>i.q)){toast("Las categorías marcadas no tienen preguntas. Añádelas en Administrar.");return}
+  const wantRec=$("#pRec").checked, wantCam=$("#pCam").checked;
+  if((wantRec||wantCam)&&!stream) await enableMedia();
+  game={jugador,tema:cats,temaLabel:shared?shared.nombre:catsLabel(cats),items,idx:-1,running:true,phase:"reading",
+    conTiempo:$("#pModoTiempo").checked,total:Math.max(30,+$("#pSegs").value||180),usado:0,last:null,inicio:Date.now(),
+    ok(){return this.items.filter(i=>i.estado==="acierto").length}, ko(){return this.items.filter(i=>i.estado==="fallo").length}};
+  buildRosco();
+  $("#cam").classList.toggle("hasvideo",!!(stream&&wantCam&&stream.getVideoTracks().length));
+  $("#camVideo").hidden=!(stream&&wantCam);
+  $("#gWho").textContent=`${jugador} · ${game.temaLabel}`;
+  $("#rVideoBox").hidden=true; $("#rVideo").hidden=true; $("#rDownload").hidden=true;
+  voiceOff=false; silentStreak=0; lockNav(true); show("game");
+  if(wantRec&&stream){ startRecording(); $("#rVideoBox").hidden=false; $("#rVideoMsg").textContent="Preparando el vídeo…" }
+  let lastT=performance.now(); clearInterval(tickI);
+  tickI=setInterval(()=>{
+    const now=performance.now(), dt=(now-lastT)/1000; lastT=now;
+    if(!game||!game.running) return;
+    if(game.phase==="answer"){ game.usado+=dt; if(game.conTiempo&&game.usado>=game.total){game.usado=game.total; finish("tiempo")} }
+    $("#gTime").textContent=timeText();
+  },200);
+  speak(cats.length===1?`Comenzamos el rosco de ${cats[0]}.`:"Comenzamos el rosco.",next);
+});
+
+function buildRosco(){
+  const st=$("#stage"); st.querySelectorAll(".L").forEach(e=>e.remove());
+  const n=game.items.length;
+  game.items.forEach((it,i)=>{
+    const a=-Math.PI/2+i*2*Math.PI/n, d=document.createElement("div");
+    d.className="L"; d.textContent=it.letra; d.style.left=(50+44*Math.cos(a))+"%"; d.style.top=(50+44*Math.sin(a))+"%";
+    st.appendChild(d); it.el=d;
+  });
+  renderGame();
+}
+function renderGame(){
+  game.items.forEach((it,i)=>{it.el.className="L "+it.estado+(i===game.idx&&game.running?" cur":"")});
+  $("#gOk").textContent=game.ok(); $("#gKo").textContent=game.ko(); $("#gTime").textContent=timeText();
+  const it=game.items[game.idx];
+  if(it){ $("#bigLetter").textContent=it.letra; $("#qLabel").textContent=(it.q.tipo==="contiene"?"Contiene la ":"Empieza por ")+it.letra; $("#qText").textContent=it.q.pregunta }
+}
+function setStatus(t,cls){const s=$("#gStatus");s.textContent=t;s.className="pill status "+(cls||"")}
+const cur=()=>game.items[game.idx];
+function next(){
+  if(!game||!game.running) return;
+  const n=game.items.length;
+  for(let k=1;k<=n;k++){const j=(game.idx+k+n)%n; if(game.items[j].estado==="pendiente"){game.idx=j; return ask()}}
+  finish("completo");
+}
+function ask(){
+  game.phase="reading"; stopListening(); renderGame(); $("#heard").textContent=""; $("#typed").value="";
+  setStatus("Leyendo…");
+  const it=cur();
+  speak(`${it.q.tipo==="contiene"?"Contiene la":"Empieza por la"} ${NOMBRE_LETRA[it.letra]||it.letra}. ${it.q.pregunta}`,startListening);
+}
+function startListening(){
+  if(!game||!game.running) return;
+  game.phase="answer";
+  if(!SR||voiceOff){setStatus("Tu turno: escribe o usa modo árbitro");return}
+  setStatus("Escuchando…","listen");
+  const tok=++listenTok;
+  try{rec&&rec.abort()}catch(e){}
+  rec=new SR(); rec.lang="es-ES"; rec.interimResults=true; rec.maxAlternatives=4; rec.continuous=false;
+  let handled=false;
+  rec.onresult=e=>{
+    if(tok!==listenTok) return;
+    let fin=null, interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i]; if(r.isFinal) fin=Array.from(r).map(a=>a.transcript); else interim+=r[0].transcript}
+    if(interim) $("#heard").textContent="… "+interim;
+    if(interim||fin) silentStreak=0;
+    if(fin&&!handled){handled=true; onAnswer(fin)}
+  };
+  rec.onerror=e=>{
+    if(tok!==listenTok) return;
+    if(["not-allowed","service-not-allowed","audio-capture","network"].includes(e.error)){
+      handled=true; voiceOff=true;
+      setStatus("Voz desactivada: escribe o usa modo árbitro");
+      toast((SR_ERR[e.error]||e.error)+" Sigue escribiendo o en modo árbitro.");
+    } else if(e.error==="no-speech") silentStreak++;
+  };
+  rec.onend=()=>{
+    if(tok!==listenTok||handled) return;
+    /* En Android, si la grabación tiene el micro, el reconocimiento no oye nada: tras varios intentos en silencio, se pasa a modo árbitro */
+    if(IS_ANDROID&&recUsesMic()&&silentStreak>=3){
+      voiceOff=true; setStatus("Voz desactivada: escribe o usa modo árbitro");
+      toast("En Android el micrófono lo está usando la grabación, así que no puede reconocer tu voz. Sigue escribiendo o en modo árbitro.");
+      return;
+    }
+    setTimeout(()=>{ if(tok===listenTok&&game&&game.running&&game.phase==="answer") startListening() },250);
+  };
+  try{srStart(rec)}catch(e){}
+}
+function stopListening(){listenTok++; try{rec&&rec.abort()}catch(e){} rec=null}
+
+function onAnswer(alts){
+  if(!game||!game.running||!["answer","reading"].includes(game.phase)) return;
+  game.phase="feedback"; stopListening();
+  const said=alts[0]||""; $("#heard").textContent=`Has dicho: "${said.trim()}"`;
+  if(alts.some(isPass)) return pasar();
+  const it=cur(); it.dicho=said;
+  resolve(alts.some(a=>isCorrect(a,it.q.respuestas))?"acierto":"fallo");
+}
+function resolve(estado){
+  const it=cur(); it.estado=estado; game.last={i:game.idx,estado};
+  $("#btnUndo").hidden=estado!=="fallo";
+  renderGame();
+  const sol=it.q.respuestas.split("|")[0].trim();
+  setStatus(estado==="acierto"?"¡Correcto!":"Fallo");
+  if(estado==="fallo") $("#heard").textContent+=(($("#heard").textContent)?" · ":"")+`La respuesta era: ${sol}`;
+  speak(estado==="acierto"?"¡Correcto!":`No. La respuesta era ${sol}.`,()=>setTimeout(next,250));
+}
+function pasar(){
+  if(!game||!game.running) return;
+  game.phase="feedback"; stopListening(); $("#btnUndo").hidden=true; setStatus("Pasapalabra");
+  speak("Pasapalabra.",next);
+}
+function finish(reason){
+  if(!game||!game.running) return;
+  game.running=false; game.phase="end"; stopListening(); clearInterval(tickI); clearTimeout(speakT);
+  if("speechSynthesis" in window) speechSynthesis.cancel();
+  renderGame(); lockNav(false);
+  const ok=game.ok(), ko=game.ko(), pend=game.items.filter(i=>i.estado==="pendiente").length, total=game.items.filter(i=>i.q).length;
+  const sc={id:uid(),fecha:new Date().toISOString(),jugador:game.jugador,tema:game.temaLabel,cats:game.tema,aciertos:ok,fallos:ko,pendientes:pend,total,segundos:Math.round(game.usado),modo:game.conTiempo?`Con tiempo (${fmt(game.total)})`:"Sin tiempo",fin:reason};
+  scores.push(sc); save(KEY.s,scores);
+  $("#rTitle").textContent=reason==="tiempo"?"¡Se acabó el tiempo!":reason==="plantado"?"Te has plantado":ok===total?"¡Rosco completo!":"Fin del rosco";
+  $("#rSub").textContent=`${game.jugador} · ${game.temaLabel} · ${ok} de ${total} letras`;
+  $("#rOk").textContent=ok; $("#rKo").textContent=ko; $("#rPend").textContent=pend; $("#rTime").textContent=fmt(game.usado);
+  speak(`${reason==="tiempo"?"Se acabó el tiempo. ":""}Has conseguido ${ok} ${ok===1?"acierto":"aciertos"}.`);
+  setTimeout(()=>{stopRecording(); show("result")},1600);
+}
+$("#btnPass").addEventListener("click",pasar);
+$("#btnRepeat").addEventListener("click",()=>{if(game&&game.running&&game.phase!=="feedback") ask()});
+$("#btnUndo").addEventListener("click",()=>{
+  if(!game||!game.last||game.last.estado!=="fallo") return;
+  game.items[game.last.i].estado="acierto"; game.last.estado="acierto"; $("#btnUndo").hidden=true; renderGame(); toast("Corregido: cuenta como acierto");
+});
+$("#typedForm").addEventListener("submit",e=>{e.preventDefault(); const v=$("#typed").value.trim(); if(v) onAnswer([v])});
+function arbitro(estado){ if(!game||!game.running||game.phase==="feedback") return; game.phase="feedback"; stopListening(); resolve(estado) }
+$("#btnOk").addEventListener("click",()=>arbitro("acierto"));
+$("#btnKo").addEventListener("click",()=>arbitro("fallo"));
+let stopArm=0;
+$("#btnStop").addEventListener("click",()=>{
+  const b=$("#btnStop");
+  if(!stopArm){b.textContent="¿Seguro? Pulsa otra vez";stopArm=setTimeout(()=>{stopArm=0;b.textContent="Plantarse"},3000);return}
+  clearTimeout(stopArm); stopArm=0; b.textContent="Plantarse"; finish("plantado");
+});
+$("#btnAgain").addEventListener("click",()=>show("setup"));
+
+/* ---------- Puntuaciones ---------- */
+function renderScores(){
+  const sel=$("#sTema"), cur=sel.value;
+  const ts=[...new Set(scores.map(s=>s.tema))].sort();
+  sel.innerHTML='<option value="">Todas</option>'+ts.map(t=>`<option>${esc(t)}</option>`).join(""); sel.value=ts.includes(cur)?cur:"";
+  const q=norm($("#sJug").value);
+  const list=scores.filter(s=>(!sel.value||s.tema===sel.value)&&(!q||norm(s.jugador).includes(q))).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const best=list.reduce((m,s)=>!m||s.aciertos>m.aciertos||(s.aciertos===m.aciertos&&s.segundos<m.segundos)?s:m,null);
+  const media=list.length?(list.reduce((a,s)=>a+s.aciertos,0)/list.length).toFixed(1):"0";
+  const completos=list.filter(s=>s.aciertos===s.total&&s.total>0);
+  const rapido=completos.reduce((m,s)=>!m||s.segundos<m.segundos?s:m,null);
+  $("#sSum").innerHTML=`<div class="stat"><b>${list.length}</b><span>Partidas</span></div>
+    <div class="stat"><b>${best?best.aciertos:0}</b><span>Mejor puntuación${best?" · "+esc(best.jugador):""}</span></div>
+    <div class="stat"><b>${media}</b><span>Media de aciertos</span></div>
+    <div class="stat"><b>${rapido?fmt(rapido.segundos):"—"}</b><span>Rosco completo más rápido</span></div>`;
+  $("#sBody").innerHTML=list.length?list.map(s=>`<tr><td>${new Date(s.fecha).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"})}</td><td>${esc(s.jugador)}</td><td>${esc(s.tema)}</td><td class="n">${s.aciertos}/${s.total}</td><td class="n">${s.fallos}</td><td class="n">${s.pendientes}</td><td class="n">${fmt(s.segundos)}</td><td>${esc(s.modo)}</td></tr>`).join(""):`<tr><td colspan="8" class="note">Todavía no hay partidas. Juega un rosco y aparecerá aquí.</td></tr>`;
+}
+$("#sTema").addEventListener("change",renderScores); $("#sJug").addEventListener("input",renderScores);
+
+/* ---------- Administración ---------- */
+$("#fLetra").innerHTML=LETRAS.map(l=>`<option>${l}</option>`).join("");
+let editId=null;
+function renderAdmin(){
+  $("#aLogin").hidden=adminIn; $("#aPanel").hidden=!adminIn;
+  if(!adminIn) return;
+  const sel=$("#aFiltro"), cur=sel.value, ts=temas();
+  sel.innerHTML='<option value="">Todas</option>'+ts.map(t=>`<option>${esc(t)}</option>`).join(""); sel.value=ts.includes(cur)?cur:"";
+  $("#temasList").innerHTML=ts.map(t=>`<option value="${esc(t)}">`).join("");
+  const base=preguntas.filter(p=>!sel.value||p.tema===sel.value);
+  $("#aCob").innerHTML=LETRAS.map(l=>{const n=base.filter(p=>p.letra===l).length;return `<span class="chip${n?"":" zero"}">${l}<small>${n}</small></span>`}).join("");
+  const q=norm($("#aBuscar").value);
+  const list=base.filter(p=>!q||norm(p.pregunta+" "+p.respuestas).includes(q)).sort((a,b)=>LETRAS.indexOf(a.letra)-LETRAS.indexOf(b.letra)||a.tema.localeCompare(b.tema));
+  $("#aBody").innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.letra)}</b><br><span class="note">${p.tipo==="contiene"?"contiene":"empieza"}</span></td><td>${esc(p.tema)}</td><td>${esc(p.pregunta)}</td><td>${esc(p.respuestas.split("|").map(s=>s.trim()).join(" · "))}</td><td style="white-space:nowrap"><button class="btn small" data-edit="${p.id}">Editar</button> <button class="btn small" data-del="${p.id}">Borrar</button></td></tr>`).join(""):`<tr><td colspan="5" class="note">No hay preguntas con este filtro. Pulsa "Nueva pregunta" para crear la primera.</td></tr>`;
+  $("#aCount").textContent=`${list.length} preguntas mostradas · ${preguntas.length} en total · ${ts.length} categorías`;
+  renderCatAdmin();
+  renderSkins();
+  renderDup();
+}
+function renderCatAdmin(){
+  const q=norm($("#aCatSearch").value);
+  const ts=temas().filter(t=>!q||norm(t).includes(q)||tagsOf(t).some(g=>norm(g).includes(q)));
+  $("#aCatBody").innerHTML=ts.length?ts.map(t=>`<tr><td><b>${esc(t)}</b></td><td class="n">${preguntas.filter(p=>p.tema===t).length}</td><td style="min-width:220px"><input type="text" data-tags="${esc(t)}" value="${esc(tagsOf(t).join(", "))}" placeholder="p. ej. Salud, Primaria"></td><td style="text-align:center"><input type="checkbox" class="hidechk" data-hide="${esc(t)}"${isHidden(t)?" checked":""} aria-label="Ocultar ${esc(t)}"></td><td><button class="btn small" type="button" data-share="${esc(t)}">Compartir</button></td></tr>`).join(""):`<tr><td colspan="5" class="note">Ninguna categoría coincide.</td></tr>`;
+  renderHist();
+}
+/* ---------- Enlace directo a una categoría ----------
+   El enlace lleva dentro las preguntas (comprimidas), así funciona en cualquier dispositivo
+   aunque esa categoría solo exista en el navegador del administrador. */
+function b64u(bytes){let s="";for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64u(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4) s+="=";const b=atob(s);return Uint8Array.from(b,c=>c.charCodeAt(0))}
+async function packCat(t){
+  const json=JSON.stringify({v:1,n:t,s:currentSkin(),q:preguntas.filter(p=>p.tema===t).map(p=>[p.letra,p.tipo==="contiene"?"c":"e",p.pregunta,p.respuestas])});
+  const raw=new TextEncoder().encode(json);
+  if(window.CompressionStream){
+    try{const buf=await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer();return "z"+b64u(new Uint8Array(buf))}catch(e){}
+  }
+  return "u"+b64u(raw);
+}
+async function unpackCat(code){
+  let bytes=unb64u(code.slice(1));
+  if(code[0]==="z"){
+    if(!window.DecompressionStream) throw new Error("Este navegador es demasiado antiguo para abrir el enlace");
+    bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+  }
+  const d=JSON.parse(new TextDecoder().decode(bytes));
+  const qs=(d.q||[]).map(r=>cleanQ({tema:d.n,letra:r[0],tipo:r[1]==="c"?"contiene":"empieza",pregunta:r[2],respuestas:r[3]})).filter(Boolean);
+  if(!qs.length) throw new Error("El enlace no tiene preguntas válidas");
+  return {nombre:String(d.n||"Rosco"),preguntas:qs,skin:SKINS.some(k=>k.id===d.s)?d.s:null};
+}
+$("#aCatBody").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-share]"); if(!b) return;
+  const t=b.dataset.share, code=await packCat(t);
+  const url=location.href.split("#")[0]+"#rosco="+code;
+  $("#shareBox").hidden=false; $("#shareLabel").textContent=`Enlace directo a ${t}`; $("#shareUrl").value=url;
+  $("#shareNote").textContent=location.protocol==="file:"
+    ?"Estás usando la app como archivo en tu ordenador: este enlace solo funcionará aquí. Ábrela desde tu dirección de Vercel para crear enlaces que funcionen en otros dispositivos."
+    :`El enlace incluye las ${preguntas.filter(p=>p.tema===t).length} preguntas de la categoría tal como están ahora. Si las cambias, crea un enlace nuevo.`;
+  $("#shareBox").scrollIntoView({behavior:"smooth",block:"nearest"});
+});
+$("#shareCopy").addEventListener("click",async()=>{
+  const i=$("#shareUrl");
+  try{await navigator.clipboard.writeText(i.value);toast("Enlace copiado")}catch(e){i.focus();i.select();toast("Selecciona el enlace y cópialo con Ctrl+C")}
+});
+let shared=null;
+async function readShared(){
+  const m=location.hash.match(/^#rosco=([zu][A-Za-z0-9_-]+)$/);
+  if(!m){shared=null;return}
+  try{shared=await unpackCat(m[1])}catch(e){shared=null;toast("No se ha podido abrir el enlace: "+e.message)}
+  applySkin(shared&&shared.skin?shared.skin:currentSkin());
+}
+
+/* ---------- Borrar historial (solo administrador) ---------- */
+function histMatches(){
+  const m=$("#hMode").value;
+  if(m==="all") return scores;
+  if(m==="zero") return scores.filter(s=>s.aciertos===0);
+  const c=$("#hCat").value; return scores.filter(s=>s.tema===c);
+}
+function renderHist(){
+  const ts=[...new Set(scores.map(s=>s.tema))].sort((a,b)=>a.localeCompare(b,"es")), sel=$("#hCat"), cur=sel.value;
+  sel.innerHTML=ts.map(t=>`<option>${esc(t)}</option>`).join(""); if(ts.includes(cur)) sel.value=cur;
+  $("#hCatBox").hidden=$("#hMode").value!=="cat";
+  const n=histMatches().length;
+  $("#hCount").textContent=scores.length?`Se borrarán ${n} de ${scores.length} partidas.`:"No hay partidas guardadas.";
+  const b=$("#hDelete"); b.disabled=!n; b.textContent="Borrar"; b.dataset.armed="";
+}
+$("#hMode").addEventListener("change",renderHist); $("#hCat").addEventListener("change",renderHist);
+$("#hDelete").addEventListener("click",()=>{
+  const b=$("#hDelete"), del=histMatches(); if(!del.length) return;
+  if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent=`¿Borrar ${del.length} partidas? Pulsa otra vez`;setTimeout(()=>{if(b.dataset.armed==="1"){b.dataset.armed="";b.textContent="Borrar"}},4000);return}
+  const ids=new Set(del.map(s=>s.id)); scores=scores.filter(s=>!ids.has(s.id)); save(KEY.s,scores); renderHist(); toast(`${ids.size} partidas borradas`);
+});
+$("#aCatSearch").addEventListener("input",renderCatAdmin);
+$("#aCatBody").addEventListener("change",e=>{
+  const h=e.target.closest("[data-hide]");
+  if(h){const t=h.dataset.hide; setMeta(t,{oculta:h.checked}); if(h.checked){selCats.delete(t);saveSel()} toast(h.checked?`${t} oculta: solo se podrá jugar con su enlace`:`${t} vuelve a verse en la pantalla principal`); return}
+  const i=e.target.closest("[data-tags]"); if(!i) return;
+  const t=i.dataset.tags; setMeta(t,{etiquetas:parseTags(i.value)}); i.value=tagsOf(t).join(", "); toast(`Etiquetas de ${t} guardadas`);
+});
+$("#aLoginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  if($("#aPin").value===adminCfg.pin){adminIn=true;$("#aPin").value="";$("#aLoginMsg").textContent="";renderAdmin()}
+  else $("#aLoginMsg").textContent="PIN incorrecto.";
+});
+$("#aLogout").addEventListener("click",()=>{adminIn=false;renderAdmin()});
+$("#aFiltro").addEventListener("change",renderAdmin); $("#aBuscar").addEventListener("input",renderAdmin);
+function openForm(p){
+  editId=p?p.id:null; $("#aForm").hidden=false; $("#fWarn").hidden=true;
+  $("#aFormTitle").textContent=p?"Editar pregunta":"Nueva pregunta";
+  $("#fTema").value=p?p.tema:($("#aFiltro").value||""); $("#fLetra").value=p?p.letra:"A"; $("#fTipo").value=p?p.tipo:"empieza";
+  $("#fPreg").value=p?p.pregunta:""; $("#fResp").value=p?p.respuestas:"";
+  $("#aForm").scrollIntoView({behavior:"smooth",block:"center"}); $("#fTema").focus();
+}
+$("#aNew").addEventListener("click",()=>openForm(null));
+$("#aCancel").addEventListener("click",()=>{$("#aForm").hidden=true;editId=null});
+$("#aForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const p={id:editId||uid(),tema:$("#fTema").value.trim(),letra:$("#fLetra").value,tipo:$("#fTipo").value,pregunta:$("#fPreg").value.trim(),respuestas:$("#fResp").value.split("|").map(s=>s.trim()).filter(Boolean).join("|")};
+  if(!p.tema||!p.pregunta||!p.respuestas) return;
+  const w=checkLetter(p);
+  if(w&&$("#fWarn").hidden){$("#fWarn").textContent=w+" Pulsa Guardar otra vez para guardarla igualmente.";$("#fWarn").hidden=false;return}
+  const i=preguntas.findIndex(x=>x.id===p.id); if(i>=0) preguntas[i]=p; else preguntas.push(p);
+  savePreg(); $("#aForm").hidden=true; editId=null; renderAdmin(); toast("Pregunta guardada");
+});
+["fLetra","fTipo","fResp"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#fWarn").hidden=true));
+$("#aBody").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-edit]"), del=e.target.closest("[data-del]");
+  if(ed) openForm(preguntas.find(p=>p.id===ed.dataset.edit));
+  if(del){
+    if(del.dataset.armed!=="1"){del.dataset.armed="1";del.textContent="¿Seguro?";setTimeout(()=>{if(del.isConnected){del.dataset.armed="";del.textContent="Borrar"}},3000);return}
+    preguntas=preguntas.filter(p=>p.id!==del.dataset.del); savePreg(); renderAdmin(); toast("Pregunta borrada");
+  }
+});
+function download(name,text,type){
+  const url=URL.createObjectURL(new Blob([text],{type})); const a=document.createElement("a");
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+$("#aExpJson").addEventListener("click",()=>download("preguntas-enroscados.json",JSON.stringify({version:2,categorias:catMeta,preguntas:preguntas.map(({id,...r})=>r)},null,2),"application/json"));
+$("#aExpCsv").addEventListener("click",()=>download("preguntas-enroscados.csv","﻿tema;letra;tipo;pregunta;respuestas\n"+preguntas.map(p=>[p.tema,p.letra,p.tipo,p.pregunta,p.respuestas].map(x=>String(x).replace(/[;\n]/g,",")).join(";")).join("\n"),"text/csv"));
+function cleanQ(r){
+  const letra=String(r.letra||"").trim().toUpperCase(); if(!LETRAS.includes(letra)) return null;
+  const q={id:uid(),tema:String(r.tema||"General").trim(),letra,tipo:/^c/i.test(r.tipo||"")?"contiene":"empieza",pregunta:String(r.pregunta||"").trim(),respuestas:String(r.respuestas||"").split("|").map(s=>s.trim()).filter(Boolean).join("|")};
+  return q.pregunta&&q.respuestas?q:null;
+}
+$("#aFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f) return; const text=await f.text(); let rows=[];
+  try{
+    if(/\.json$/i.test(f.name)||/^[\[{]/.test(text.trim())){
+      const data=JSON.parse(text);
+      if(Array.isArray(data)) rows=data;
+      else{
+        rows=Array.isArray(data.preguntas)?data.preguntas:[];
+        const cm=data.categorias&&typeof data.categorias==="object"?data.categorias:{};
+        for(const t in cm){ if($("#aImpMode").value==="replace"||!catMeta[t]) catMeta[t]={etiquetas:parseTags((cm[t].etiquetas||[]).join(",")),oculta:!!cm[t].oculta} }
+        saveCats();
+      }
+    }
+    else{
+      const lines=text.replace(/^﻿/,"").split(/\r?\n/).filter(l=>l.trim()); const d=(lines[0].match(/;/g)||[]).length>=4?";":",";
+      rows=lines.filter((l,i)=>!(i===0&&/^tema/i.test(l))).map(l=>{const c=l.split(d);return {tema:c[0],letra:c[1],tipo:c[2],pregunta:c.slice(3,c.length-1).join(d),respuestas:c[c.length-1]}});
+    }
+  }catch(err){toast("No se ha podido leer el archivo");e.target.value="";return}
+  const ok=(Array.isArray(rows)?rows:[]).map(cleanQ).filter(Boolean);
+  if(!ok.length){toast("El archivo no tiene preguntas válidas");e.target.value="";return}
+  importarConRevision(ok,$("#aImpMode").value==="replace"); e.target.value="";
+});
+/* ---------- Importación con detección de repetidas ----------
+   Una pregunta nueva se considera repetida si, dentro de la misma temática:
+   · el texto de la pregunta es igual (sin tener en cuenta tildes, mayúsculas ni signos), o
+   · es de la misma letra y comparte alguna respuesta válida.
+   Las repetidas no se importan: quedan en "Revisar preguntas repetidas". */
+let pendientes=load("rosco.pendientes",[]);
+const savePend=()=>save("rosco.pendientes",pendientes);
+const respSet=q=>new Set(String(q.respuestas).split("|").map(norm).filter(Boolean));
+function parecido(a,b){
+  if(norm(a.tema)!==norm(b.tema)) return null;
+  if(norm(a.pregunta)===norm(b.pregunta)) return "Misma pregunta";
+  if(a.letra===b.letra){const ra=respSet(a); for(const r of respSet(b)) if(ra.has(r)) return "Misma letra y misma respuesta"}
+  return null;
+}
+function importarConRevision(nuevas,reemplazar){
+  const base=reemplazar?[]:preguntas.slice(), aceptadas=[], dudas=[];
+  for(const q of nuevas){
+    let m=null, motivo=null, origen="existente";
+    for(const x of base){ motivo=parecido(q,x); if(motivo){m=x;break} }
+    if(!m) for(const x of aceptadas){ motivo=parecido(q,x); if(motivo){m=x;origen="archivo";break} }
+    if(m) dudas.push({id:uid(),nueva:q,existente:m,origen,motivo}); else aceptadas.push(q);
+  }
+  preguntas=base.concat(aceptadas); savePreg();
+  pendientes=pendientes.concat(dudas); savePend(); renderAdmin();
+  toast(`${aceptadas.length} preguntas importadas`+(dudas.length?` · ${dudas.length} repetidas para revisar`:""));
+  if(dudas.length) $("#dupCard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function qHtml(q){return `<p class="dupQ">${esc(q.pregunta)}</p><p class="dupA">→ ${esc(String(q.respuestas).split("|").map(x=>x.trim()).join(" · "))}</p>`}
+function renderDup(){
+  $("#dupCard").hidden=!pendientes.length; $("#dupCount").textContent=pendientes.length?`(${pendientes.length})`:"";
+  $("#dupList").innerHTML=pendientes.map(d=>{
+    const vivo=preguntas.some(p=>p.id===d.existente.id);
+    return `<div class="dupItem">
+      <div class="dupHead"><b>${esc(d.nueva.letra)}</b> · ${esc(d.nueva.tema)} <span class="dupWhy">${esc(d.motivo)}</span></div>
+      <div class="dupCols">
+        <div><span class="dupLbl">Nueva (del archivo)</span>${qHtml(d.nueva)}</div>
+        <div><span class="dupLbl">${d.origen==="archivo"?"Otra del mismo archivo":"Ya la tienes"}${vivo?"":" (ya no existe)"}</span>${qHtml(d.existente)}</div>
+      </div>
+      <div class="row"><button class="btn small primary" type="button" data-dup="keep" data-id="${d.id}">Importar igualmente</button>
+      ${vivo?`<button class="btn small" type="button" data-dup="replace" data-id="${d.id}">Sustituir la que tengo</button>`:""}
+      <button class="btn small" type="button" data-dup="drop" data-id="${d.id}">Descartar</button></div>
+    </div>`}).join("");
+}
+function resolverDup(id,accion){
+  const d=pendientes.find(x=>x.id===id); if(!d) return;
+  if(accion==="keep") preguntas.push(d.nueva);
+  if(accion==="replace"){const i=preguntas.findIndex(p=>p.id===d.existente.id); if(i>=0) preguntas[i]=Object.assign({},d.nueva,{id:d.existente.id}); else preguntas.push(d.nueva)}
+  pendientes=pendientes.filter(x=>x.id!==id); savePreg(); savePend();
+}
+$("#dupList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-dup]"); if(!b) return;
+  resolverDup(b.dataset.id,b.dataset.dup); renderAdmin();
+  toast({keep:"Pregunta importada",replace:"Pregunta sustituida",drop:"Pregunta descartada"}[b.dataset.dup]);
+});
+function dupBulk(btn,accion,texto){
+  if(btn.dataset.armed!=="1"){btn.dataset.armed="1";const t=btn.textContent;btn.textContent="¿Seguro? Pulsa otra vez";setTimeout(()=>{btn.dataset.armed="";btn.textContent=t},3000);return}
+  btn.dataset.armed=""; const n=pendientes.length;
+  pendientes.slice().forEach(d=>resolverDup(d.id,accion)); renderAdmin(); toast(`${n} ${texto}`);
+}
+$("#dupAllKeep").addEventListener("click",e=>dupBulk(e.currentTarget,"keep","preguntas importadas"));
+$("#dupAllDrop").addEventListener("click",e=>dupBulk(e.currentTarget,"drop","preguntas descartadas"));
+
+let seedArm=0;
+$("#aSeed").addEventListener("click",()=>{
+  const b=$("#aSeed");
+  if(!seedArm){b.textContent="Se sustituirán las temáticas de ejemplo. Pulsa otra vez";seedArm=setTimeout(()=>{seedArm=0;b.textContent="Restaurar preguntas de ejemplo"},3000);return}
+  clearTimeout(seedArm); seedArm=0; b.textContent="Restaurar preguntas de ejemplo";
+  preguntas=preguntas.filter(p=>!SEED_TEMAS.includes(p.tema)).concat(seedQuestions()); savePreg(); renderAdmin(); toast("Ejemplos restaurados");
+});
+$("#aPinForm").addEventListener("submit",e=>{e.preventDefault(); const v=$("#aNewPin").value.trim(); if(v.length<4) return; adminCfg.pin=v; save(KEY.a,adminCfg); $("#aNewPin").value=""; toast("PIN actualizado")});
+
+/* ---------- Lista de espera (Google Sheets vía Apps Script) ----------
+   Rellena estos dos datos antes de publicar. Mientras falte alguno, el formulario aparece cerrado. */
+const WAITLIST = {
+  url: "https://script.google.com/macros/s/AKfycbzgJWlJC0mRdO38DfTEykeSOXLCYuyH21fgs6r9bb5GLQFlyxaxzAuuCD15HpCmuaFf/exec",       // URL de la aplicación web de Apps Script (termina en /exec)
+  contacto: "respiraconnosy@gmail.com"   // Email para ejercer los derechos de protección de datos
+};
+const wlReady=()=>/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(WAITLIST.url)&&/@/.test(WAITLIST.contacto);
+function renderWaitlist(){
+  const ok=wlReady();
+  $("#wlClosed").hidden=ok; $("#wlForm").hidden=!ok;
+  $("#wlContacto").textContent=WAITLIST.contacto||"el email de contacto";
+  const done=load("rosco.listaEspera",null);
+  if(done){ $("#wlForm").hidden=true; $("#wlDone").hidden=false; $("#wlDoneMsg").textContent=`Te apuntaste con ${done}. Te escribiremos cuando abramos.` }
+}
+$("#wlForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#wlErr"); err.hidden=true;
+  const d={nombre:$("#wlNombre").value.trim(),apellidos:$("#wlApellidos").value.trim(),email:$("#wlEmail").value.trim(),
+    profesion:$("#wlProf").value,plan:$("#wlPlan").value,uso:$("#wlUso").value.trim(),web:$("#wlWeb").value,
+    consentimiento:$("#wlConsent").checked,textoConsentimiento:$("#wlConsentText").textContent.trim(),origen:location.href.split("#")[0]};
+  const falta=[];
+  if(!d.nombre) falta.push("nombre"); if(!d.apellidos) falta.push("apellidos");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) falta.push("un email válido");
+  if(!d.profesion) falta.push("profesión"); if(!d.plan) falta.push("plan que te interesa"); if(!d.uso) falta.push("para qué usarías la app");
+  if(falta.length){err.textContent="Falta: "+falta.join(", ")+".";err.hidden=false;return}
+  if(!d.consentimiento){err.textContent="Para apuntarte tienes que aceptar el tratamiento de tus datos.";err.hidden=false;return}
+  const b=$("#wlSend"); b.disabled=true; b.textContent="Enviando…";
+  const body=JSON.stringify(d);
+  let res=null;
+  /* Solo se da por apuntado si el script de Google confirma que ha guardado la fila */
+  try{ const r=await fetch(WAITLIST.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body}); res=await r.json() }
+  catch(ex){ res=null }
+  b.disabled=false; b.textContent="Unirme a la lista de espera";
+  if(!res||!res.ok){err.textContent=res&&res.error==="servidor"?"No se ha podido guardar tu inscripción. Inténtalo de nuevo en unos minutos.":"No se ha podido enviar. Revisa tu conexión y vuelve a intentarlo.";err.hidden=false;return}
+  save("rosco.listaEspera",d.email);
+  $("#wlForm").hidden=true; $("#wlDone").hidden=false;
+  $("#wlDoneMsg").textContent=res.duplicate?`Ese email (${d.email}) ya estaba en la lista. No hace falta que hagas nada más.`:`Te escribiremos a ${d.email} cuando abramos.`;
+});
+
+/* ---------- Skins ----------
+   SKIN_POR_DEFECTO es el que ve todo el mundo. Lo que elijas en Administrar se guarda en tu navegador
+   y viaja en los enlaces que compartas. */
+const SKIN_POR_DEFECTO = "azul";
+const SKINS=[
+  {id:"azul",nombre:"Azul noche",bg:"#081634",l:"#1f62e0"},
+  {id:"morado",nombre:"Morado galaxia",bg:"#140a2b",l:"#7b3fe4"},
+  {id:"atardecer",nombre:"Atardecer",bg:"#24100a",l:"#e2661b"},
+  {id:"fucsia",nombre:"Fucsia",bg:"#250a1d",l:"#d6359c"},
+  {id:"oceano",nombre:"Océano",bg:"#05202a",l:"#0f8fb8"},
+  {id:"grafito",nombre:"Grafito",bg:"#111318",l:"#5468ff"},
+  {id:"claro",nombre:"Claro",bg:"#eef2fb",l:"#1f62e0"},
+  {id:"imparables",nombre:"Atletas Imparables",bg:"#ffffff",l:"#17b4ea",ok:"#61ce70"}
+];
+function currentSkin(){const s=load("rosco.skin",null);return SKINS.some(k=>k.id===s)?s:SKIN_POR_DEFECTO}
+function applySkin(id){
+  if(id==="azul") delete document.documentElement.dataset.skin; else document.documentElement.dataset.skin=id;
+  PAL=null;
+}
+function renderSkins(){
+  const cur=document.documentElement.dataset.skin||"azul";
+  $("#skinList").innerHTML=SKINS.map(k=>`<button type="button" class="skin" role="radio" aria-checked="${k.id===cur}" data-skin="${k.id}"><span class="sw" style="background:${k.bg}"><i style="background:${k.l}">A</i><i style="background:${k.l}">B</i><i style="background:${k.ok||"#16a85a"}">C</i><i style="background:#dd3b35">D</i></span><b>${k.nombre}</b></button>`).join("");
+  $("#skinNote").textContent=currentSkin()===SKIN_POR_DEFECTO?"Este es el aspecto que ven todos los jugadores.":`Lo ves tú en este navegador y lo llevarán los enlaces que compartas desde ahora. El resto de jugadores sigue viendo "${SKINS.find(k=>k.id===SKIN_POR_DEFECTO).nombre}".`;
+}
+$("#skinList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-skin]"); if(!b) return;
+  save("rosco.skin",b.dataset.skin); applySkin(b.dataset.skin); renderSkins(); toast(`Skin: ${SKINS.find(k=>k.id===b.dataset.skin).nombre}`);
+});
+applySkin(currentSkin());
+
+$("#wlAgain").addEventListener("click",()=>{try{localStorage.removeItem("rosco.listaEspera")}catch(e){} $("#wlDone").hidden=true; $("#wlForm").reset(); renderWaitlist()});
+
+if(!load(KEY.q,null)) savePreg();
+$("#sharedExit").addEventListener("click",()=>{shared=null;history.replaceState(null,"",location.pathname+location.search);fillSetup()});
+window.addEventListener("hashchange",async()=>{ if(game&&game.running) return; await readShared(); if(!$("#v-setup").hidden) fillSetup() });
+readShared().then(()=>show("setup"));
+</script>
+</body>
+</html>
